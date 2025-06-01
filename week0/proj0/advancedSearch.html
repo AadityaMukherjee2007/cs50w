@@ -10,8 +10,37 @@
         <div class="content" id="advSearch">Advanced Search</div>
         <div id="separator"></div>
 
-        <form action="">
-            <div class="content" id="subHead">Find pages with...</div>
+        <div class="content" id="subHead">Find pages with...</div>
+        <div style="font-size: 13px;" class="instHead" id="subHead">To do this in the search box.</div>
+        <form class="content" action="https://www.google.com/search">
+            <input type="hidden" name="tbs" value="adv:1">
+
+            <div class="form_row">
+                <label for="as_q">all these words:</label>
+                <input type="text" id="as_q" name="as_q">
+                <span id="inst">Type the important words: </span><span id="highlightedTxt">tri-colour rat terrier</span>
+            </div>
+
+            <div class="form_row">
+                <label for="as_epq">this exact word or phrase:</label>
+                <input type="text" id="as_epq" name="as_epq">
+                <span id="inst">Put exact words in quotes: </span><span id="highlightedTxt">"rat terrier"</span>
+            </div>
+
+            <div class="form_row">
+                <label for="as_oq">any of these words:</label>
+                <input type="text" id="as_oq" name="as_oq">
+                <span id="inst">Type </span><span id="highlightedTxt">OR</span><span style="margin-left: 0px;" id="inst"> between all the words you want: </span><span id="highlightedTxt">miniature OR standard</span>
+            </div>
+
+            <div class="form_row">
+                <label for="as_eq">none of these words:</label>
+                <input type="text" id="as_eq" name="as_eq">
+                <div id="lastinst"><span id="inst">Put a minus sign just before words that you don't want:</span></div><div><br><span style="margin-left: -270px;" id="highlightedTxt">-rodent, -"Jack Russell"</span></div>
+            </div>
+
+            <input type="submit" value="Advanced Search">
         </form>
+        <div id="separator"></div>
     </body>
 </html>
