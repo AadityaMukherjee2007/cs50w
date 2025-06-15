@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Currency Exchange</title>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                fetch("https://api.exchangeratesapi.io/v1/latest?access_key=454f1e7aac53e2064885754651682c30&format=1")
+                    .then(response => response.json())
+                    .then(data => {
+                        for (let curr in data.rates) {
+                            const opt = document.createElement("option");
+                            opt.value = curr;
+                            document.querySelector("#currencies").append(opt);
+                        }               
+                })
+                .catch (error => {
+                    console.log("Error:", error);
+                });
+                
+                document.querySelector("form").onsubmit = () => {
+                    fetch("https://api.exchangeratesapi.io/v1/latest?access_key=454f1e7aac53e2064885754651682c30&format=1")
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data.rates);
+                        const currency = document.querySelector("#currency").value.toUpperCase();
+                        const rate = data.rates[currency];
+
+                        if (rate !== undefined)
+                            document.querySelector("#result").innerHTML = `1 Euro = ${data.rates[currency].toFixed(2)} ${currency}`;
+                        else
+                            document.querySelector("#result").innerHTML = "Invalid Currency"
+                        return false;
+                    });
+
+                    
+                }
+            });
+        </script>
+    </head>
+    <body>
+        <form>
+            <input id="currency" list="currencies" placeholder="Currency">
+            <datalist id="currencies"></datalist>
+            <input type="submit" value="Convert">
+        </form>
+        <div id="result"></div>
+    </body>
+</html>

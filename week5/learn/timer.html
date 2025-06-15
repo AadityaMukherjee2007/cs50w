@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Timer</title>
+        <script>
+            if (!localStorage.getItem("counter")) {
+                localStorage.setItem("counter", 0);
+            }
+
+            function count() {
+                let counter = localStorage.getItem("counter");
+                counter++;
+                document.querySelector("h1").innerHTML = counter;
+                localStorage.setItem("counter", counter)
+            }
+
+            document.addEventListener("DOMContentLoaded", setInterval(count, 1000));
+        </script>
+    </head>
+    <body>
+        <h1>0</h1>
+    </body>
+</html>

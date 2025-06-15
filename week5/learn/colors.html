@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Colors</title>
+        <script>
+
+            document.addEventListener("DOMContentLoaded", function() {
+                /*
+                // change the font color to red
+                document.querySelector("#red").onclick = function() {
+                    document.querySelector('#hello').style.color = "red";
+                };
+
+                // change the font color to green
+                document.querySelector("#green").onclick = function() {
+                    document.querySelector('#hello').style.color = "green";
+                };
+
+                // change the font color to blue
+                document.querySelector("#blue").onclick = function() {
+                    document.querySelector('#hello').style.color = "blue";
+                };
+                */
+
+                // '=>' is teh shorthand notation for a function in javascript
+                // x => {} means x is the input to the function
+                
+                document.querySelectorAll('button').forEach(button => {
+                    button.onclick = () => {
+                        document.querySelector("#hello").style.color = button.dataset.color;
+                    };
+                });
+            });
+
+        </script>
+    </head>
+    <body>
+        <h1 id="hello">Hello!</h1>
+        <button data-color="red">Red</button>
+        <button data-color="green">Green</button>
+        <button data-color="blue">Blue</button>
+    </body>
+</html>

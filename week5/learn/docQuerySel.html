@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Hello</title>
+        <script>
+            function hello() {
+                // '===' is used to check for strict equality 
+                // whereas '==' is less strict 
+                /* if (document.querySelector('h1').innerHTML === "Hello!") {
+                    document.querySelector('h1').innerHTML = "Goodbye!";
+                } else {
+                    document.querySelector('h1').innerHTML = "Hello!";
+                }*/
+                const heading = document.querySelector('h1');
+                if (heading.innerHTML === "Hello!") {
+                    heading.innerHTML = "Goodbye!";
+                } else {
+                    heading.innerHTML = "Hello!";
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Hello!</h1>
+        <button onclick="hello()">Click Here</button>
+    </body>
+</html>
