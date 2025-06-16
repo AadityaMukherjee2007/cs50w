@@ -16,5 +16,8 @@ urlpatterns = [
     path("postComment", views.postComment, name="postComment"),
     path("deletePost", views.deletePost, name="deletePost"),
     path("placeBid", views.placeBid, name="placeBid"),
+    path("category", views.category, name="category"),
+    path("all", views.all, name="all"),
+    path("includeInactive", views.includeInactive, name="includeInactive"),
     path("listing_page/<str:listing_id>", views.listingPage, name="listingPage")
 ]

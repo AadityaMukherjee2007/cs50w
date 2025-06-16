@@ -45,11 +45,10 @@
                 </span>
             </li>
             <li>Auction is 
-                <span style="color: rgb(28, 119, 255);">
                     {% if listing.is_active %}
-                        Active.
+                        <span style="color: rgb(28, 119, 255);">Active.</span>
                     {% else %}
-                        Closed.
+                        <span style="color: red;">Closed.</span>
                     {% endif %}
                 </span>
             </li>
@@ -60,7 +59,11 @@
         <h2 class="mb-3">Comments</h2>
         {% for comment in comments %}
             <div class="rows border mr-3 ml-3  p-2">
-                <h3 style="color: rgb(28, 119, 255);">{{ comment.author }}</h3>
+                {% if user == comment.author %}
+                    <h3 style="color: rgb(28, 119, 255);">{{ comment.author }}</h3>
+                {% else %}
+                    <h3>{{ comment.author }}</h3>
+                {% endif %}
                 <p class="pl-2 pb-3">{{ comment.comment }}</p>
                 {% if user.is_authenticated %}
                     {% if user == comment.author %}

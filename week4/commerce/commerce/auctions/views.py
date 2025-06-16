@@ -81,17 +81,8 @@ class CommentForm(forms.Form):
 
 
 def index(request):
-    listings = AuctionListing.objects.all()
-    listing_info = []
-    for listing in listings:
-        if not listing.is_active:
-            highest_bid_obj = Bid.objects.filter(listing=listing).order_by('-bid').first()
-            listing_info.append([listing.id, highest_bid_obj.user.username, highest_bid_obj.bid])
-            print(listing_info)
-
     return render(request, "auctions/index.html", {
-        "listings": listings,
-        "listing_info": listing_info
+        "listings": AuctionListing.objects.filter(is_active=True)
     })
 
 
@@ -269,3 +260,29 @@ def placeBid(request):
             bid.save()
         
         return HttpResponseRedirect(reverse("listingPage", args=[request.POST.get("listing_id")]))
+    
+
+def category(request):
+    return render(request, "auctions/category.html")
+
+
+def all(request):
+    listings = AuctionListing.objects.all()
+    listing_info = []
+    for listing in listings:
+        if not listing.is_active:
+            highest_bid_obj = Bid.objects.filter(listing=listing).order_by('-bid').first()
+            listing_info.append([listing.id, highest_bid_obj.user.username, highest_bid_obj.bid])
+
+    return render(request, "auctions/category/all.html", {
+        "listings": listings,
+        "listing_info": listing_info
+    })
+
+
+def includeInactive(request):
+    # show winners properly...
+    # modify the code in includeInactive.hmtl too...
+    return render(request, "auctions/category/includeInactive.html", {
+        "listings": AuctionListing.objects.filter(is_active=False)
+    })

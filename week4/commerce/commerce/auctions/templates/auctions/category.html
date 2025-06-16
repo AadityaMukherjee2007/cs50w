@@ -1,0 +1,10 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Category</h2>
+
+    <ul>
+        <a style="text-decoration: none;" href="{% url 'all' %}"><li>Show All</li></a>
+        <a style="text-decoration: none;" href="{% url 'includeInactive' %}"><li>Show Inactive Auctions</li></a>
+    </ul>
+{% endblock %}
