@@ -4,35 +4,20 @@
 
 {% block listings %}
     <div class="container">
-        <div class="row align-items-start">
+        <div>
             {% for listing in listings %}
-                <a style="text-decoration: none;" href="listing_page/{{ listing.id }}">
+                <a style="text-decoration: none;" href="listing_page/{{ listing.0 }}">
                     <div class="row border p-3 mb-5">
-                        <img class="border" src="{{ listing.image_link }}" alt="{{ listing.item_name }}" height="200">
+                        <img class="border" src="{{ listing.3 }}" alt="{{ listing.item_name }}" height="200">
                         <div style="color: black" class="col">
-                            <h3>{{ listing.item_name }}</h3>
-                            <p>{{ listing.item_description }}</p>
-                            <h5>Starting Price: ${{ listing.start_bid }}</h5>
-                            <div class="row p-3">
-                                {% if user.is_authenticated %}
-                                    <div class="pr-3">
-                                        <form action="{% url 'addToWatchlist' %}" method="post">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="item_id" value="{{ listing.id }}">
-                                            <input class="btn btn-primary" type="submit" value="Add to Watchlist">
-                                        </form>
-                                    </div>
-                                    {% if user == listing.created_by %}
-                                        <div>
-                                            <form action="{% url 'closeAuction' %}" method="post">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="item_id" value="{{ listing.id }}">
-                                                <input class="btn btn-primary" type="submit" value="Close">
-                                            </form>
-                                        </div>
-                                    {% endif %}
-                                {% endif %}
-                            </div>
+                            <h3>{{ listing.1 }}</h3>
+                            <p>{{ listing.2 }}</p>
+                            <h5>Starting Price: ${{ listing.4 }}</h5>
+                            {% for item in listings %}
+                                <h2 style="color: red;">Sold to {{ item.5 }} for ${{ item.6 }}</h2>
+                            {% empty %}
+                                No inactive auctions
+                            {% endfor %}
                         </div>
                     </div>
                 </a>

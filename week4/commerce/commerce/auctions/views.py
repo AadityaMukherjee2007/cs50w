@@ -1,4 +1,5 @@
 from decimal import Decimal, ROUND_DOWN
+from os import name
 from django import forms
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -8,7 +9,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.db.models import Max
 
-from .models import User, AuctionListing, Comments, Bid 
+from .models import Category, User, AuctionListing, Comments, Bid 
 
 class NewListing(forms.Form):
     itemName = forms.CharField(
@@ -143,17 +144,20 @@ def new_listing(request):
         title = request.POST["itemName"]
         link = request.POST["imageLink"]
         description = request.POST["itemDescription"]
-        category = request.POST["category"]
+        category_name = request.POST["category"].lower().capitalize()
         startBid = request.POST["startingBid"]
+
+        category, _ = Category.objects.get_or_create(name=category_name)
 
         newListing = AuctionListing()
         newListing.created_by = request.user
         newListing.item_name = title
         newListing.image_link = link
         newListing.item_description = description
-        newListing.category = category
         newListing.start_bid = startBid
         newListing.save()
+
+        newListing.categories.add(category)
 
         return HttpResponseRedirect(reverse("index"))
 
@@ -263,7 +267,24 @@ def placeBid(request):
     
 
 def category(request):
-    return render(request, "auctions/category.html")
+    return render(request, "auctions/category.html", {
+        "categories": Category.objects.all()
+    })
+
+
+def category_type(request, category):
+    listings = Category.objects.get(name=category).listings.all()
+    listing_info = []
+    for listing in listings:
+        if not listing.is_active:
+            highest_bid_obj = Bid.objects.filter(listing=listing).order_by('-bid').first()
+            listing_info.append([listing.id, highest_bid_obj.user.username, highest_bid_obj.bid])
+    
+    return render(request, "auctions/category/type.html", {
+        "category": category,
+        "listings": listings,
+        "listing_info": listing_info
+    })
 
 
 def all(request):
@@ -283,6 +304,12 @@ def all(request):
 def includeInactive(request):
     # show winners properly...
     # modify the code in includeInactive.hmtl too...
+    listings = AuctionListing.objects.filter(is_active=False)
+    listing_info = []
+    for listing in listings:
+        highest_bid_obj = Bid.objects.filter(listing=listing).order_by('-bid').first()
+        listing_info.append([listing.id, listing.item_name, listing.item_description, listing.image_link, listing.start_bid, highest_bid_obj.user.username, highest_bid_obj.bid])
+
     return render(request, "auctions/category/includeInactive.html", {
-        "listings": AuctionListing.objects.filter(is_active=False)
+        "listings": listing_info
     })

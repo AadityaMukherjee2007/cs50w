@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from sympy import true
@@ -9,15 +10,15 @@ class User(AbstractUser):
         return self.username
 
 class AuctionListing(models.Model):
-    item_name = models.CharField()
-    image_link = models.URLField(null=True, blank=True)
-    item_description = models.CharField()
+    item_name = models.CharField(max_length=100)
+    image_link = models.URLField(max_length=1000, null=True, blank=True)
+    item_description = models.CharField(max_length=100)
     start_bid = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=0.00
     )
-    category = models.CharField(null=True, blank=True)
+    category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True, related_name="listings")
     created_by = models.ForeignKey("User", on_delete=models.CASCADE, related_name="listings")
     is_active = models.BooleanField(default=True)
 
@@ -47,4 +48,11 @@ class Bid(models.Model):
 
     def __str__(self):
         return f"user: {self.user}, item: {self.listing}, bid: {self.bid}"
+    
+
+class Category(models.Model):
+    name = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f"Category: {self.name}"
 
