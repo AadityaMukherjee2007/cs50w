@@ -9,7 +9,7 @@
             <h5>Current Bid: ${{ current_bid }}</h5>
 
             {% if listing.is_active %}
-                <div class="row p-3">
+                <div class="d-flex flex-wrap align-items-end p-3">
                     <form action="{% url 'placeBid' %}" method="post">
                         {% csrf_token %}
                         {{ bid_form }}
@@ -20,6 +20,13 @@
                             <input class="btn btn-primary" type="submit" value="Place Bid" disabled="true">
                         {% endif %}
                     </form>
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'addToWatchlist' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="item_id" value="{{ listing.id }}">
+                            <input class="btn btn-primary" type="submit" value="Add to Watchlist">
+                        </form>
+                    {% endif %}
                 </div>
             {% else %}
                 <h1 style="color: red;" class="row p-3">Sold to {{ winner }} for ${{ current_bid }}</h1>

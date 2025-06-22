@@ -18,6 +18,7 @@ urlpatterns = [
     path("placeBid", views.placeBid, name="placeBid"),
     path("all", views.all, name="all"),
     path("includeInactive", views.includeInactive, name="includeInactive"),
+    path("yourListings", views.yourListings, name="yourListings"),
     path("category", views.category, name="category"),
     path("category/<str:category>", views.category_type, name="category"),
     path("category/listing_page/<str:listing_id>", views.listingPage, name="listingPage"),

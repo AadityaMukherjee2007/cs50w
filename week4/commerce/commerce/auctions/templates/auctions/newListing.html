@@ -6,6 +6,11 @@
     <form action="{% url 'new_listing' %}" method="post">
         {% csrf_token %}
         {{ form }}
+        <datalist id="category-options">
+            {% for category in categories %}
+                <option value="{{ category.name }}">
+            {% endfor %}
+        </datalist>
         <input type="submit" class="btn btn-primary" value="Create Listing">
     </form>
 {% endblock %}

@@ -9,16 +9,17 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+
 class AuctionListing(models.Model):
     item_name = models.CharField(max_length=100)
-    image_link = models.URLField(max_length=1000, null=True, blank=True)
-    item_description = models.CharField(max_length=100)
+    image_link = models.URLField(null=True, blank=True)
+    item_description = models.CharField()
     start_bid = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=0.00
     )
-    category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True, related_name="listings")
+    category = models.ForeignKey("Category", on_delete=models.CASCADE, null=True, related_name="listings")
     created_by = models.ForeignKey("User", on_delete=models.CASCADE, related_name="listings")
     is_active = models.BooleanField(default=True)
 

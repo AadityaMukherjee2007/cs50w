@@ -54,6 +54,7 @@ class NewListing(forms.Form):
         widget=forms.TextInput(attrs={
             "class": "form-control w-25 mb-5",
             "placeholder": "Category",
+            "list": "category-options"
         })
     )
 
@@ -155,14 +156,14 @@ def new_listing(request):
         newListing.image_link = link
         newListing.item_description = description
         newListing.start_bid = startBid
+        newListing.category = category
         newListing.save()
-
-        newListing.categories.add(category)
 
         return HttpResponseRedirect(reverse("index"))
 
     return render(request, "auctions/newListing.html", {
-        "form": NewListing()
+        "form": NewListing(), 
+        "categories": Category.objects.all()
     })
 
 
@@ -312,4 +313,18 @@ def includeInactive(request):
 
     return render(request, "auctions/category/includeInactive.html", {
         "listings": listing_info
+    })
+
+
+def yourListings(request):
+    listings = AuctionListing.objects.filter(created_by=request.user)
+    listing_info = []
+    for listing in listings:
+        if not listing.is_active:
+            highest_bid_obj = Bid.objects.filter(listing=listing).order_by('-bid').first()
+            listing_info.append([listing.id, highest_bid_obj.user.username, highest_bid_obj.bid])
+
+    return render(request, "auctions/category/yourListings.html", {
+        "listings": listings,
+        "listing_info": listing_info
     })

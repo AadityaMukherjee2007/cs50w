@@ -3,11 +3,11 @@
 {% block pageHead %}Inactive Listings{% endblock %}\
 
 {% block listings %}
-    <div class="container">
+    <div class="container-fluid m-0">
         <div>
             {% for listing in listings %}
                 <a style="text-decoration: none;" href="listing_page/{{ listing.0 }}">
-                    <div class="row border p-3 mb-5">
+                    <div class="row border p-3 m-3">
                         <img class="border" src="{{ listing.3 }}" alt="{{ listing.item_name }}" height="200">
                         <div style="color: black" class="col">
                             <h3>{{ listing.1 }}</h3>
