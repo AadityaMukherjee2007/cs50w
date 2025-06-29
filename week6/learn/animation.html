@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Animations</title>
+        <style>
+            @keyframes grow {
+                from {
+                    font-size: 20px;
+                }
+                to {
+                    font-size: 100px;
+                }
+            }
+
+            h1 {
+                animation-name: grow;
+                animation-duration: 2s;
+                animation-fill-mode: forwards;
+                animation-iteration-count: infinite;
+            }
+
+            @keyframes move {
+                0% {
+                    left: 0%;
+                }
+                50% {
+                    left: 50%;
+                }
+                100% {
+                    left: 0%;
+                }
+            }
+
+            h2 {
+                position: relative;
+                animation-name: move;
+                animation-duration: 2s;
+                animation-fill-mode: forwards;
+                animation-iteration-count: infinite;
+            }
+        </style>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const h1 = document.querySelector("h1");
+                const h2 = document.querySelector("h2");
+
+                h1.style.animationPlayState = "paused";
+                h2.style.animationPlayState = "paused";
+
+                document.querySelector("button").onclick = () => {
+                    if (h1.style.animationPlayState === "paused") {
+                        h1.style.animationPlayState = "running";
+                        h2.style.animationPlayState = "running";
+
+                        document.querySelector("button").innerHTML = "Pause";
+                    } else {
+                        h1.style.animationPlayState = "paused";
+                        h2.style.animationPlayState = "paused";
+
+                        document.querySelector("button").innerHTML = "Play";
+                    }
+                }
+            });
+        </script>
+    </head>
+    <body>
+        <button>Play</button>
+        <h1>Welcome!</h1>
+        <h2>Hello!</h2>
+    </body>
+</html>
