@@ -13,11 +13,7 @@
                             <h3>{{ listing.1 }}</h3>
                             <p>{{ listing.2 }}</p>
                             <h5>Starting Price: ${{ listing.4 }}</h5>
-                            {% for item in listings %}
-                                <h2 style="color: red;">Sold to {{ item.5 }} for ${{ item.6 }}</h2>
-                            {% empty %}
-                                No inactive auctions
-                            {% endfor %}
+                            <h2 style="color: red;">Sold to {{ listing.5 }} for ${{ listing.6 }}</h2>
                         </div>
                     </div>
                 </a>

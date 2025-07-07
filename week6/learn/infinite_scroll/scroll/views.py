@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render
-import time, json
+import time
 
 # Create your views here.
 

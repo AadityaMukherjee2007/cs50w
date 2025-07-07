@@ -19,7 +19,7 @@ class AuctionListing(models.Model):
         decimal_places=2,
         default=0.00
     )
-    category = models.ForeignKey("Category", on_delete=models.CASCADE, null=True, related_name="listings")
+    category = models.ForeignKey("Category", on_delete=models.CASCADE, null=True, blank=True, related_name="listings")
     created_by = models.ForeignKey("User", on_delete=models.CASCADE, related_name="listings")
     is_active = models.BooleanField(default=True)
 
