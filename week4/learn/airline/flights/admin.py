@@ -13,3 +13,4 @@ class PassengerAdmin(admin.ModelAdmin):
 admin.site.register(Flight, FlightAdmin)
 admin.site.register(Airport)
 admin.site.register(Passenger, PassengerAdmin)
+

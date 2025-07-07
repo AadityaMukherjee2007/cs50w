@@ -22,6 +22,7 @@ def flight(request, flight_id):
 
 
 def book(request, flight_id):
+    # function to book a flight
     if request.method == "POST":
         flight = Flight.objects.get(pk=flight_id)
         passenger = Passenger.objects.get(pk=int(request.POST["passenger"]))
