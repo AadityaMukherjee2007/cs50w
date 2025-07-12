@@ -1,0 +1,25 @@
+{% extends "network/layout.html" %}
+
+{% load static %}
+
+{% block body %}
+    <input id="user" type="hidden" value="{{ current_user }}">
+    <div class="m-4">  
+        <h1>All Posts</h1>
+        
+        {% if user.is_authenticated %}
+            <div class="m-5 p-3 border rounded shadow-sm">
+                <form action="{% url 'index' %}" method="post">
+                    <label><h4>New Post</h4></label>
+                    {% csrf_token %}
+                    {{ form.content }}
+                    {{ form.errors }}
+                    <input type="submit" class="btn btn-primary mt-3 px-4" value="Post">
+                </form>
+            </div>
+        {% endif %}
+
+        <div id="all_posts" class="m-5 p-3"></div>
+        <script src="{% static 'network/index.js' %}"></script>
+    </div>
+{% endblock %}
