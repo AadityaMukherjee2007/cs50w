@@ -3,7 +3,13 @@
 {% load static %}
 
 {% block body %}
-    <input id="user" type="hidden" value="{{ current_user }}">
+    {% if user.is_authenticated %}
+        <input id="loggedin" type="hidden" value="true">
+    {% else %}
+        <input id="loggedin" type="hidden" value="false">
+    {% endif %}
+
+    <input id="current_user" type="hidden" value="{{ current_user }}">
     <div class="m-4">  
         <h1>All Posts</h1>
         
@@ -14,7 +20,7 @@
                     {% csrf_token %}
                     {{ form.content }}
                     {{ form.errors }}
-                    <input type="submit" class="btn btn-primary mt-3 px-4" value="Post">
+                    <input id="postbtn" type="submit" class="btn btn-primary mt-3 px-4" value="Post">
                 </form>
             </div>
         {% endif %}

@@ -6,7 +6,6 @@
     {% if user.is_authenticated %}
         <input id="currentuser" type="hidden" value="{{ current_user }}">
         <input id="profileuser" type="hidden" value="{{ profile_user.username }}">
-        {% block navuser %}{{current_user}}{% endblock %}
     {% else %}
         <input id="currentuser" type="hidden" value="">
         <input id="profileuser" type="hidden" value="{{ profile_user.username }}">

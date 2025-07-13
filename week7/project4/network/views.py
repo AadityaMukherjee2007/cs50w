@@ -1,3 +1,4 @@
+import json
 from django import forms
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -6,6 +7,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt                          
 
 from .models import User, Post
 
@@ -13,6 +15,7 @@ class NewPost(forms.Form):
     content = forms.CharField(
         widget=forms.Textarea(attrs={
             "class": "form-control w-100 justify-content-center",
+            "id": "post_content",
             "placeholder": "Write Here...",
             "rows": "3"
         })
@@ -37,6 +40,29 @@ def index(request):
         "posts": Post.objects.all().order_by('-timestamp'),
         "current_user": user
     })
+
+
+@csrf_exempt
+def editPost(request, id):
+    if request.method == "PUT":
+        data = json.loads(request.body)
+        content = data["content"]
+
+        try:
+            post = Post.objects.get(id=id)
+            post.content = content
+            post.save()
+
+            return JsonResponse({
+                "message": "Post updated successfully!"
+            }, status=200)
+        except Post.DoesNotExist:
+            return JsonResponse({
+                "error": "Post not found"
+            }, status=404)
+    return JsonResponse({
+        "error": "id not provided"
+    }, status=400)
 
 
 def profile(request):
@@ -74,7 +100,7 @@ def getPosts(request):
 
     return JsonResponse({
         "posts": list(posts)
-        })
+        }, status=200)
 
 
 def getPost(request):
@@ -89,11 +115,11 @@ def getPost(request):
                     "timestamp": post.timestamp.isoformat(),
                     "likes": post.likes.count() if post.likes else 0
                 }
-            })
+            }, status=200)
         except Post.DoesNotExist:
             return JsonResponse({
                 "error": "Post not found"
-            })
+            }, status=400)
 
     return JsonResponse({
         "error": "ID not provided"
@@ -108,18 +134,18 @@ def likedpostcheck(request):
             if post.likes.filter(id=user.id).exists():
                 return JsonResponse({
                     "liked": True
-                })
+                }, status=200)
             else:
                 return JsonResponse({
                     "liked": False
-                })
+                }, status=200)
         except Post.DoesNotExist:
             return JsonResponse({
                 "error": "Post not found"
-            })
+            }, status=404)
     return JsonResponse({
         "error": "id not provided"
-        })
+        }, status=400)
 
 
 @login_required
@@ -140,14 +166,14 @@ def likePost(request):
                         "timestamp": post.timestamp.isoformat(),
                         "likes": post.likes.count() if post.likes else 0
                     }
-                })
+                }, status=200)
         except Post.DoesNotExist:
             return JsonResponse({
                 "error": "Post not found"
-            })
+            }, status=404)
     return JsonResponse({
         "error": "id not provided"
-        })
+        }, status=400)
 
 
 @login_required
@@ -168,14 +194,14 @@ def unlikePost(request):
                         "timestamp": post.timestamp.isoformat(),
                         "likes": post.likes.count() if post.likes else 0
                     }
-                })
+                }, status=200)
         except Post.DoesNotExist:
             return JsonResponse({
                 "error": "Post not found"
-            })
+            }, status=404)
     return JsonResponse({
         "error": "id not provided"
-        })
+        }, status=400)
 
 
 def login_view(request):

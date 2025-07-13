@@ -15,4 +15,5 @@ urlpatterns = [
     path("unlikepost", views.unlikePost, name="unlikepost"),
     path("likedpostcheck", views.likedpostcheck, name="likedpostcheck"),
     path("goToProfile", views.goToProfile, name="goToProfile"),
+    path("editpost/<int:id>", views.editPost, name="editpost"),
 ]
