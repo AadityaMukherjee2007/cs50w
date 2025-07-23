@@ -8,7 +8,7 @@
     100% {
         transform: scale(1);
     }
-}
+} 
 
 .animated {
     animation: heartBounce 0.5s ease-in-out;

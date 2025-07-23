@@ -13,7 +13,12 @@ urlpatterns = [
     path("getpost", views.getPost, name="getpost"),
     path("likepost", views.likePost, name="likepost"),
     path("unlikepost", views.unlikePost, name="unlikepost"),
+    path("followingPage", views.followingPage, name="followingPage"),
     path("likedpostcheck", views.likedpostcheck, name="likedpostcheck"),
     path("goToProfile", views.goToProfile, name="goToProfile"),
+    path("getFollowInfo", views.getFollowingInfo, name="getFollowInfo"),
+    path("getFollowingPosts", views.getFollowingPosts, name="getFollowingPosts"),
     path("editpost/<int:id>", views.editPost, name="editpost"),
+    path("follow/<str:profile>", views.follow, name="follow"),
+    path("unfollow/<str:profile>", views.unfollow, name="unfollow"),
 ]

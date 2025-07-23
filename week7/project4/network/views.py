@@ -7,7 +7,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt                          
+from django.views.decorators.csrf import csrf_exempt          
+from django.core.paginator import Paginator                
 
 from .models import User, Post
 
@@ -37,9 +38,109 @@ def index(request):
 
     return render(request, "network/index.html", {
         "form": NewPost(),
-        "posts": Post.objects.all().order_by('-timestamp'),
         "current_user": user
     })
+
+
+def followingPage(request):
+    return render(request, "network/followingPage.html", {
+        "current_user": request.user.username
+    })
+
+
+def getFollowingPosts(request):
+    try:
+        pageNumber = request.GET.get("page", 1)
+        user = User.objects.get(username=request.GET.get("user"))
+        following = user.following.all()
+        posts = Post.objects.filter(author__in=following).annotate(like_count=Count("likes")).order_by("-timestamp")
+
+        paginator = Paginator(posts, 10)
+        pageObj = paginator.get_page(pageNumber)
+
+        postsData = [{
+            "id": post.id, 
+            "author__username": post.author.username, 
+            "timestamp": post.timestamp.isoformat(), #.strftime('%Y-%m-%d %H:%M:%S'),
+            "content": post.content,
+            "like_count": post.like_count
+        } for post in pageObj]
+
+        return JsonResponse({
+            "posts": postsData,
+            "has_next": pageObj.has_next()
+        }, status=200)
+        '''posts = Post.objects.filter(author__in=following).annotate(like_count=Count("likes")).order_by("-timestamp").values(
+            "id", "author__username", "timestamp", "content", "like_count"
+        )
+        
+        if request.GET.get('start') and request.GET.get('end'):
+            start = int(request.GET.get('start'))
+            end = int(request.GET.get('end'))
+            data = []
+
+            for i in range(start, end + 1):
+                data.append(posts[i])
+
+            return JsonResponse({
+                "posts": list(data)
+                }, status=200) 
+        else:
+            return JsonResponse({
+                "posts": list(posts)
+                }, status=200)'''
+    except (User.DoesNotExist, Post.DoesNotExist):
+        return JsonResponse({
+            "error": "Users or posts does not exist"
+        }, status=404)
+
+
+def follow(request, profile):
+    try:
+        user = User.objects.get(username=request.user.username)
+        profile = User.objects.get(username=profile)
+        user.following.add(profile)
+        user.save()
+        return JsonResponse({
+            "message": "Operation successful"
+        }, status=200)
+    except User.DoesNotExist:
+        return JsonResponse({
+            "error": "User does not exist"
+        }, status=404)
+    
+
+def unfollow(request, profile):
+    try:
+        user = User.objects.get(username=request.user.username)
+        profile = User.objects.get(username=profile)
+        user.following.remove(profile)
+        user.save()
+        return JsonResponse({
+            "message": "Operation successful"
+        }, status=200)
+    except User.DoesNotExist:
+        return JsonResponse({
+            "error": "User does not exist"
+        }, status=404)
+
+
+def getFollowingInfo(request):
+    if user := request.GET.get("user"):
+        try:
+            user = User.objects.get(username=user)
+            following = [{"username": x.username, "id": x.id} for x in user.following.all()]
+            followers = [{"username": x.username, "id": x.id} for x in user.followers.all()]
+            print(followers, following)
+
+            return JsonResponse({
+                "following": following,
+                "followers": followers
+            }, status=200)
+        except User.DoesNotExist:
+            return JsonResponse({
+                "error": "User does not exist!"
+            }, status=404)
 
 
 @csrf_exempt
@@ -71,7 +172,8 @@ def profile(request):
     return render(request, "network/profile.html", {
         "profile_user": User.objects.get(username=user),
         "posts": Post.objects.filter(author=author).order_by('-timestamp'),
-        "current_user": user
+        "current_user": user,
+        "form": NewPost()
     })
 
 
@@ -88,19 +190,59 @@ def goToProfile(request):
 
 
 def getPosts(request):
-    if user := request.GET.get("author"):
-        author = User.objects.get(username=user)
-        posts = Post.objects.filter(author=author).annotate(like_count=Count("likes")).order_by("-timestamp").values(
-            "id", "author__username", "timestamp", "content", "like_count"
-        )
-    else:
-        posts = Post.objects.annotate(like_count=Count("likes")).order_by("-timestamp").values(
-            "id", "author__username", "timestamp", "content", "like_count"
-        )
+    try:
+        pageNumber = request.GET.get("page", 1)
 
-    return JsonResponse({
-        "posts": list(posts)
+        if user := request.GET.get("author"):
+            author = User.objects.get(username=user)
+            posts = Post.objects.filter(author=author)
+            '''posts = Post.objects.filter(author=author).annotate(like_count=Count("likes")).order_by("-timestamp").values(
+                "id", "author__username", "timestamp", "content", "like_count"
+            )'''
+        else:
+            posts = Post.objects.all()
+            '''posts = Post.objects.annotate(like_count=Count("likes")).order_by("-timestamp").values(
+                "id", "author__username", "timestamp", "content", "like_count"
+            )'''
+
+        posts = posts.annotate(like_count=Count("likes")).order_by("-timestamp")
+
+        paginator = Paginator(posts, 10)
+        pageObj = paginator.get_page(pageNumber)
+
+        postsData = [{
+            "id": post.id, 
+            "author__username": post.author.username, 
+            "timestamp": post.timestamp.isoformat(), #.strftime('%Y-%m-%d %H:%M:%S'),
+            "content": post.content,
+            "like_count": post.like_count
+        } for post in pageObj]
+
+        return JsonResponse({
+            "posts": postsData,
+            "has_next": pageObj.has_next()
         }, status=200)
+    
+    except (Post.DoesNotExist, User.DoesNotExist):
+        return JsonResponse({
+            "error": "User or Posts does not exist"
+        }, status=404)
+
+    '''if request.GET.get('start') and request.GET.get('end'):
+        start = int(request.GET.get('start'))
+        end = int(request.GET.get('end'))
+        data = []
+
+        for i in range(start, end + 1):
+            data.append(posts[i])
+
+        return JsonResponse({
+            "posts": list(data)
+            }, status=200) 
+    else:
+        return JsonResponse({
+            "posts": list(posts)
+            }, status=200)'''
 
 
 def getPost(request):

@@ -1,5 +1,4 @@
 const user = document.getElementById("current_user").value;
-const loggedin = document.getElementById("loggedin").value;
 let page = 1;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -24,12 +23,8 @@ function formatTime(timestamp) {
     return date.toLocaleString();
 }
 
-function signinAlert() {
-    alert("Sign in to like post");
-}
-
 function showPosts() {
-    fetch(`getposts?page=${page}`)
+    fetch(`getFollowingPosts?user=${user}&page=${page}`)
     .then(response => response.json())
     .then(data => {
         console.log(data);
@@ -69,18 +64,6 @@ function showPosts() {
                             </svg>
                         </div>
                         <div class="pl-1">${ post.like_count }</div>
-                    </div>
-                    ${
-                        post.author__username === user
-                        ?`<div id="editbtn" class="ml-4">
-                            Edit
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
-                                <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
-                            </svg>
-                        </div>` 
-                        :``
-                    }
-                </div>
                 `;
                 postdiv.setAttribute('data-post-id', post.id);
 
@@ -102,7 +85,7 @@ function showPosts() {
                     unliked.style.display = "block";
                     liked.style.display = "none";
                 }
-            })
+            });
         });
 
         document.querySelectorAll("#like_post").forEach(post => {
@@ -112,11 +95,6 @@ function showPosts() {
             const id = post.closest("[data-post-id]").dataset.postId;
 
             unliked.addEventListener("click", () => {
-                if (loggedin === "false") {
-                    signinAlert();
-                    return;
-                }
-
                 unliked.style.display = "none";
                 liked.style.display = "block";
                 
@@ -133,43 +111,6 @@ function showPosts() {
                 fetch(`unlikepost?id=${id}&user=${user}`)
                 .then(() => {
                     showPosts();
-                });
-            });
-        });
-
-        document.querySelectorAll("#editbtn").forEach(post => {
-            const id = post.closest("[data-post-id]").dataset.postId;
-
-            post.addEventListener("click", () => {
-                fetch(`getpost?id=${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    document.querySelector("nav").scrollIntoView({ behavior: 'smooth' });
-                    let postbtn = document.querySelector("#postbtn");
-                    let newPostBtn = document.createElement("button");
-                    newPostBtn.innerHTML = "Save";
-                    newPostBtn.className = "btn btn-primary mt-3 px-4";
-                    postbtn.replaceWith(newPostBtn);
-                    newPostBtn.type = "button";
-
-                    const post_content = document.querySelector("#post_content");
-                    post_content.innerHTML = data.post.content;
-                    
-                
-                    newPostBtn.addEventListener("click", () => {
-                        fetch(`editpost/${id}`, {
-                            method: "PUT",
-                            body: JSON.stringify({
-                                content: post_content.value
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log(data);
-                            location.reload();
-                        });
-                    });
                 });
             });
         });
