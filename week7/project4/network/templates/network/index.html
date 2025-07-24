@@ -16,7 +16,7 @@
         {% if user.is_authenticated %}
             <div class="m-5 p-3 border rounded shadow-sm">
                 <form action="{% url 'index' %}" method="post">
-                    <label><h4>New Post</h4></label>
+                    <label><h4 id="postHead">New Post</h4></label>
                     {% csrf_token %}
                     {{ form.content }}
                     {{ form.errors }}

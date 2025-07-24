@@ -146,6 +146,7 @@ function showPosts() {
                 .then(data => {
                     console.log(data);
                     document.querySelector("nav").scrollIntoView({ behavior: 'smooth' });
+                    document.querySelector("#postHead").innerHTML = "Edit Post";
                     let postbtn = document.querySelector("#postbtn");
                     let newPostBtn = document.createElement("button");
                     newPostBtn.innerHTML = "Save";
@@ -167,7 +168,8 @@ function showPosts() {
                         .then(response => response.json())
                         .then(data => {
                             console.log(data);
-                            location.reload();
+                            //location.reload();
+                            showPosts();
                         });
                     });
                 });
