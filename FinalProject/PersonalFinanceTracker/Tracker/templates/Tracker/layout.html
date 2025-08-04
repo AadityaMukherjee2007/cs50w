@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}Finance Tracker{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="{% static 'financial-profit.png' %}" type="image/x-icon"/>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-100">
+    {% if user.is_authenticated %}
+        <input type="hidden" id="isLoggedIn" value="{{ user }}">
+    {% else %}
+        <input type="hidden" id="isLoggedIn" value="">
+    {% endif %}
+
+    <!-- Navbar -->
+    <nav class="bg-gray-800">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+
+                <!-- Left section -->
+                <div class="flex items-center">
+                    <img src="{% static 'financial-profit.png' %}" class="h-8 w-auto" alt="Logo">
+                    <div class="text-lg text-gray-300 m-2">Finance Tracker</div>
+                    <div class="hidden sm:flex sm:ml-6 space-x-4">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'dashboard' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm">Dashboard</a>
+                            <a href="{% url 'transactions' %}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm">Transactions</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Right section -->
+                <div class="flex items-center">
+                    <!-- Notifications -->
+                    <!-- <button class="p-1 rounded-full text-gray-400 hover:text-white focus:outline-none">
+                        <span class="sr-only">View notifications</span>
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button> -->
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative ml-3">
+                        {% if user.is_authenticated %}
+                            <button id="dropdownToggle" class="flex rounded-full bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white">
+                                <span class="sr-only">Open user menu</span>
+                                <img class="h-8 w-8 rounded-full" src="{% static 'user.png' %}" alt="">
+                            </button>
+                        {% endif %}
+
+                        <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white py-1 ring-1 ring-black ring-opacity-5">
+                            <div class="block px-4 py-2 text-sm text-gray-700">{{ user }}</div>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                            <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <div class="sm:hidden ml-2">
+                        <button id="mobileToggle" class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-md focus:outline-none">
+                            <svg class="h-6 w-6" stroke="currentColor" fill="none" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden sm:hidden px-2 pt-2 pb-3 space-y-1">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md">Dashboard</a>
+                <a href="#" class="block text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md">Transactions</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Page content -->
+    <div class="body">
+        {% block body %}{% endblock %}
+    </div>
+
+    <script src="{% static 'layout.js' %}"></script>
+</body>
+</html>
