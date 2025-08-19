@@ -168,8 +168,7 @@ function showPosts() {
                         .then(response => response.json())
                         .then(data => {
                             console.log(data);
-                            //location.reload();
-                            showPosts();
+                            location.reload();
                         });
                     });
                 });

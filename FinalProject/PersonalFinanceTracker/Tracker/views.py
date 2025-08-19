@@ -1,3 +1,4 @@
+from django import forms
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -5,8 +6,16 @@ from django.urls import reverse
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from matplotlib import category
 
 # Create your views here.
+
+class TransactionForm(forms.Form):
+    amount = forms.DecimalField()
+    description = forms.CharField(max_length=1000)
+    category = forms.CharField(max_length=64)
+    date = forms.DateField()
+
 
 def index(request):
     print(request.user)
@@ -14,6 +23,29 @@ def index(request):
         return HttpResponseRedirect(reverse("login"))
     else:
         return HttpResponseRedirect(reverse("dashboard"))
+    
+
+def addTransaction(request):
+    user = request.user
+    if request.method == "POST":
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            amt = form.cleaned_data("amount")
+            description = form.cleaned_data("description")
+            category = form.cleaned_data("category")
+            date = form.cleaned_data("date") 
+
+            print(user, amt, description, category, date)
+            return JsonResponse({
+                "amount": amt,
+                "description": description,
+                "category": category,
+                "date": date
+            })
+    return JsonResponse({
+        "error": "Invalid Request"
+    }, status=404)
+
 
 @login_required
 def dashboard(request):
