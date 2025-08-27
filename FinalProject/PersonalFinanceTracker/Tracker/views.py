@@ -1,3 +1,5 @@
+import datetime
+import json
 from django import forms
 from django.shortcuts import render
 from django.contrib.auth.models import User
@@ -6,7 +8,8 @@ from django.urls import reverse
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from matplotlib import category
+
+from .models import Transaction, Category
 
 # Create your views here.
 
@@ -24,27 +27,47 @@ def index(request):
     else:
         return HttpResponseRedirect(reverse("dashboard"))
     
-
+    
 def addTransaction(request):
     user = request.user
     if request.method == "POST":
-        form = TransactionForm(request.POST)
+        data = json.loads(request.body)
+        form = TransactionForm(data)
         if form.is_valid():
-            amt = form.cleaned_data("amount")
-            description = form.cleaned_data("description")
-            category = form.cleaned_data("category")
-            date = form.cleaned_data("date") 
+            amt = form.cleaned_data["amount"]
+            description = form.cleaned_data["description"]
+            category_name = form.cleaned_data["category"]
+            date = form.cleaned_data["date"]
 
-            print(user, amt, description, category, date)
+            category, _= Category.objects.get_or_create(name=category_name)
+
+            transaction = Transaction()
+            transaction.user = user 
+            transaction.amount = amt 
+            transaction.description = description
+            transaction.category = category
+            transaction.datetime = date
+            transaction.save()
+
+            # print(user, amt, description, category, date)
             return JsonResponse({
                 "amount": amt,
                 "description": description,
-                "category": category,
+                "category": category.name,
                 "date": date
             })
     return JsonResponse({
         "error": "Invalid Request"
     }, status=404)
+
+
+def getTransactions(request):
+    if request.method == "GET":
+        username = request.GET.get("user")
+        transactions = Transaction.objects.filter(user__username=username).values(
+            "id", "amount", "description", "category__name", "datetime"
+        )
+        return JsonResponse(list(transactions), safe=False)
 
 
 @login_required
