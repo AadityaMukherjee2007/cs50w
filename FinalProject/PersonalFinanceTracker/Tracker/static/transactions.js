@@ -51,28 +51,66 @@ document.addEventListener("DOMContentLoaded", function() {
     .then(response => response.json())
     .then(result => {
         // console.log(result);
-
         let counter = 0;
+
+        for (let transaction of result)
+            counter++;
+        
         for (let transaction of result)
         {
-            counter++;
             console.log(transaction);
 
             let transactionDiv = document.createElement("div");
             transactionDiv.className = "max-w-2xl mx-auto mt-4 bg-white shadow-md rounded-lg p-4 border border-gray-200";
 
             transactionDiv.innerHTML = `
-                <h3 class="text-lg font-bold text-gray-800 mb-2">Transaction #${counter}</h3>
-                <p class="text-gray-700"><span class="font-semibold">Amount:</span> £${transaction.amount}</p>
-                <p class="text-gray-700"><span class="font-semibold">Description:</span> ${transaction.description}</p>
-                <p class="text-gray-700"><span class="font-semibold">Category:</span> ${transaction.category__name}</p>
-                <p class="text-gray-700"><span class="font-semibold">Date:</span> ${formatDate(transaction.datetime)}</p>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Transaction #${counter}</h3>
+                    <p class="text-gray-700"><span class="font-semibold">Amount:</span> $${transaction.amount}</p>
+                    <p class="text-gray-700"><span class="font-semibold">Description:</span> ${transaction.description}</p>
+                    <p class="text-gray-700"><span class="font-semibold">Category:</span> ${transaction.category__name}</p>
+                    <p class="text-gray-700"><span class="font-semibold">Date:</span> ${formatDate(transaction.datetime)}</p>
+                </div>
+                <div class="relative" data-id="${transaction.id}">
+                    <div class="absolute right-0 bottom-0">
+                        <button class="edit-btn m-1 p-2 rounded-lg bg-sky-400 hover:bg-sky-500">Edit</button>
+                        <button class="delete-btn m-1 p-2 rounded-lg bg-red-500 hover:bg-red-600">Delete</button>
+                    </div>
+                </div>
             `;
 
             // transaction.addEventListener("contextmenu", (event))
 
             transactions_div.appendChild(transactionDiv);
+            counter--;
         }
-    });
 
+        document.querySelectorAll(".delete-btn").forEach(button => {
+            button.addEventListener("click", (event) => {
+                const transaction_id = event.target.closest(".relative").getAttribute("data-id");
+                // alert(transaction_id);
+
+                fetch("deleteTransaction", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrf_token
+                    },
+                    body: JSON.stringify({
+                        id: transaction_id
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {})
+                .catch(error => console.error("Error deleting:", error));
+            });
+        });
+
+        document.querySelectorAll(".edit-btn").forEach(button => {
+            button.addEventListener("click", (event) => {
+                const transaction_id = event.target.closest(".relative").getAttribute("data-id");
+                // alert(transaction_id);
+            });
+        });
+    });
 })

@@ -64,10 +64,21 @@ def addTransaction(request):
 def getTransactions(request):
     if request.method == "GET":
         username = request.GET.get("user")
-        transactions = Transaction.objects.filter(user__username=username).values(
+        transactions = Transaction.objects.filter(user__username=username).order_by("-datetime").values(
             "id", "amount", "description", "category__name", "datetime"
         )
         return JsonResponse(list(transactions), safe=False)
+    
+
+def deleteTransaction(request):
+    user = request.user
+    if request.method == "POST":
+        data = json.loads(request.body)
+        transaction_id = data.get("id")
+        print(transaction_id)
+    return JsonResponse({
+        "error": "Invalid Request"
+    }, status=404)
 
 
 @login_required
