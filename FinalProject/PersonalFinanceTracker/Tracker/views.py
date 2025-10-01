@@ -9,7 +9,7 @@ from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-from .models import Transaction, Category
+from .models import Transaction, Category, User
 
 # Create your views here.
 
@@ -75,7 +75,13 @@ def deleteTransaction(request):
     if request.method == "POST":
         data = json.loads(request.body)
         transaction_id = data.get("id")
+        transaction = Transaction.objects.get(id=transaction_id)
+        # print(transaction)
+        transaction.delete()
         print(transaction_id)
+        return JsonResponse({
+            "message": f"post {transaction_id} deleted successfully"
+        })
     return JsonResponse({
         "error": "Invalid Request"
     }, status=404)

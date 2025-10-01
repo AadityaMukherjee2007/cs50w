@@ -6,7 +6,7 @@
     <input type="hidden" id="User" name="User" value="{{ user }}">
     <div class="max-w-2xl mx-auto mt-8 bg-white shadow-lg rounded-lg p-6">
     <h2 class="text-2xl font-bold mb-4 text-gray-800 justify-self-center" id="transactionHeading" style="cursor: pointer;">Add Transaction</h2>
-    <form class="space-y-4">
+    <form class="space-y-4" method="post">
         {% csrf_token %}
 
         <!-- Amount -->
@@ -28,7 +28,7 @@
                 <option value="">Select a category</option>
                 <option value="income">Income</option>
                 <option value="expense">Expense</option>
-                <option value="savings">Savings</option>
+                <!-- <option value="savings">Savings</option> -->
                 <!-- <option class="bg-gray-300" value="add">Add Category</option> -->
             </select>
         </div>

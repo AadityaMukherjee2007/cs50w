@@ -101,7 +101,10 @@ document.addEventListener("DOMContentLoaded", function() {
                     })
                 })
                 .then(response => response.json())
-                .then(result => {})
+                .then(result => {
+                    // alert(result["message"]);
+                    window.location.reload();
+                })
                 .catch(error => console.error("Error deleting:", error));
             });
         });
