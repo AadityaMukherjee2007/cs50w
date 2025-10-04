@@ -1,2 +1,2 @@
 # cs50w
-Web Programming with Python and Javascript
+Web Programming with Python
