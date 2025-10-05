@@ -120,10 +120,22 @@ document.addEventListener("DOMContentLoaded", function() {
                     console.log(result);
 
                     const transactionHeading = document.querySelector("#transactionHeading");
-                    let formContent = document.querySelector("form");
+                    let form = document.querySelector("form");
+
+                    document.getElementById("amount").value = result["amount"];
+                    document.getElementById("description").value = result["description"];
+                    document.getElementById("category").value = result["category"];
+                    
+                    const date = new Date(result["datetime"]);
+                    document.getElementById("date").value = date.toISOString().split("T")[0];
                     
                     transactionHeading.classList.remove("justify-self-center")
-                    formContent.style.display = "block";
+                    form.style.display = "block";
+
+                    form.addEventListener("submit", event => {
+                        alert("edit form submitted");
+                        
+                    });
                 })
                 .catch(error => console.error("Error editing: ", error));
             });
