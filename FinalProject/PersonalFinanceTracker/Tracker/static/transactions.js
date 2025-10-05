@@ -113,6 +113,19 @@ document.addEventListener("DOMContentLoaded", function() {
             button.addEventListener("click", (event) => {
                 const transaction_id = event.target.closest(".relative").getAttribute("data-id");
                 // alert(transaction_id);
+
+                fetch(`getTransaction?user=${USER}&id=${transaction_id}`)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result);
+
+                    const transactionHeading = document.querySelector("#transactionHeading");
+                    let formContent = document.querySelector("form");
+                    
+                    transactionHeading.classList.remove("justify-self-center")
+                    formContent.style.display = "block";
+                })
+                .catch(error => console.error("Error editing: ", error));
             });
         });
     });

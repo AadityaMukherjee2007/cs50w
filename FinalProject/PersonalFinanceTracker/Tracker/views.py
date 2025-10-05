@@ -68,6 +68,29 @@ def getTransactions(request):
             "id", "amount", "description", "category__name", "datetime"
         )
         return JsonResponse(list(transactions), safe=False)
+    else:
+        return JsonResponse({
+            "error": "User not found!"
+        }, status=404)
+    
+
+def getTransaction(request):
+    if request.method == "GET":
+        username = request.GET.get("user")
+        id = request.GET.get("id")
+        transaction = Transaction.objects.filter(user__username=username).get(id=id)
+        print(transaction)
+        return JsonResponse({
+            "amount": transaction.amount,
+            "description": transaction.description,
+            "category": transaction.category.name,
+            "datetime": transaction.datetime
+        }, status=200)
+    else:
+        return JsonResponse({
+            "message": "Transaction not found"
+        }, status=404)
+
     
 
 def deleteTransaction(request):
