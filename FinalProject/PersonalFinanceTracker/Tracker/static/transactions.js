@@ -1,13 +1,10 @@
-function formatDate(isoDate) {
-    let d = new Date(isoDate);
-    return d.toLocaleDateString();
-}
+const USER = document.getElementById("User").value;
+const csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+const transactionHeading = document.querySelector("#transactionHeading");
+const transactions_div = document.getElementById("transactions");
 
 document.addEventListener("DOMContentLoaded", function() {
-    const USER = document.getElementById("User").value;
-    const csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    const transactionHeading = document.querySelector("#transactionHeading");
-    const transactions_div = document.getElementById("transactions");
+    
     let formContent = document.querySelector("form");
     formContent.style.display = "none";
 
@@ -21,7 +18,18 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    document.querySelector("form").onsubmit = () => {
+    displayTransactions();
+    addTransaction();
+});
+
+function formatDate(isoDate) {
+    let d = new Date(isoDate);
+    return d.toLocaleDateString();
+}
+
+function addTransaction() {
+    document.querySelector("form").onsubmit = (event) => {
+        event.preventDefault();
         const amount = document.getElementById("amount").value;
         const description = document.getElementById("description").value;
         const category = document.getElementById("category").value;
@@ -46,7 +54,10 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         // console.log(amount, description, category, date);
     }
+}
 
+function displayTransactions() {
+    transactions_div.innerHTML = "";
     fetch(`getTransactions?user=${USER}`)
     .then(response => response.json())
     .then(result => {
@@ -85,60 +96,95 @@ document.addEventListener("DOMContentLoaded", function() {
             counter--;
         }
 
-        document.querySelectorAll(".delete-btn").forEach(button => {
-            button.addEventListener("click", (event) => {
-                const transaction_id = event.target.closest(".relative").getAttribute("data-id");
-                // alert(transaction_id);
+        deleteTransaction();
+        editTransaction();
+    })
+}
 
-                fetch("deleteTransaction", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrf_token
-                    },
-                    body: JSON.stringify({
-                        id: transaction_id
-                    })
+function deleteTransaction() {
+    document.querySelectorAll(".delete-btn").forEach(button => {
+        button.addEventListener("click", (event) => {
+            const transaction_id = event.target.closest(".relative").getAttribute("data-id");
+            // alert(transaction_id);
+
+            fetch("deleteTransaction", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf_token
+                },
+                body: JSON.stringify({
+                    id: transaction_id
                 })
-                .then(response => response.json())
-                .then(result => {
-                    // alert(result["message"]);
-                    window.location.reload();
-                })
-                .catch(error => console.error("Error deleting:", error));
-            });
-        });
-
-        document.querySelectorAll(".edit-btn").forEach(button => {
-            button.addEventListener("click", (event) => {
-                const transaction_id = event.target.closest(".relative").getAttribute("data-id");
-                // alert(transaction_id);
-
-                fetch(`getTransaction?user=${USER}&id=${transaction_id}`)
-                .then(response => response.json())
-                .then(result => {
-                    console.log(result);
-
-                    const transactionHeading = document.querySelector("#transactionHeading");
-                    let form = document.querySelector("form");
-
-                    document.getElementById("amount").value = result["amount"];
-                    document.getElementById("description").value = result["description"];
-                    document.getElementById("category").value = result["category"];
-                    
-                    const date = new Date(result["datetime"]);
-                    document.getElementById("date").value = date.toISOString().split("T")[0];
-                    
-                    transactionHeading.classList.remove("justify-self-center")
-                    form.style.display = "block";
-
-                    form.addEventListener("submit", event => {
-                        alert("edit form submitted");
-                        
-                    });
-                })
-                .catch(error => console.error("Error editing: ", error));
-            });
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+                // window.location.reload();
+                displayTransactions();
+            })
+            .catch(error => console.error("Error deleting:", error));
         });
     });
-})
+}
+
+function editTransaction() {
+    document.querySelectorAll(".edit-btn").forEach(button => {
+        button.addEventListener("click", (event) => {
+            event.preventDefault();
+
+            const transaction_id = event.target.closest(".relative").getAttribute("data-id");
+            // alert(transaction_id);
+
+            fetch(`getTransaction?user=${USER}&id=${transaction_id}`)
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+
+                const transactionHeading = document.querySelector("#transactionHeading");
+                let form = document.querySelector("form");
+
+                document.getElementById("submit-btn").innerHTML = "Edit Transaction";
+
+                document.getElementById("amount").value = result["amount"];
+                document.getElementById("description").value = result["description"];
+                document.getElementById("category").value = result["category"];
+                
+                const date = new Date(result["datetime"]);
+                document.getElementById("date").value = date.toISOString().split("T")[0];
+                
+                transactionHeading.classList.remove("justify-self-center")
+                form.style.display = "block";
+
+                const submit_btn = document.getElementById("submit-btn");
+                submit_btn.replaceWith(submit_btn.cloneNode(true));
+                submit_btn.onclick = (event) => {
+                    // event.preventDefault();
+                    // alert("edit form submitted");
+                    fetch("editTransaction", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrf_token
+                        },
+                        body: JSON.stringify({
+                            id: transaction_id,
+                            amount: document.getElementById("amount").value,
+                            description: document.getElementById("description").value,
+                            category: document.getElementById("category").value,
+                            datetime: document.getElementById("date").value
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        console.log(result);
+                        // window.location.reload();
+                        displayTransactions();
+                    })
+                    .catch(error => console.error("Error editing:", error));
+                }
+            })
+            .catch(error => console.error("Error editing: ", error));
+        });
+    });
+}

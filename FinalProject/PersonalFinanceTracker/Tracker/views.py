@@ -78,23 +78,55 @@ def getTransaction(request):
     if request.method == "GET":
         username = request.GET.get("user")
         id = request.GET.get("id")
-        transaction = Transaction.objects.filter(user__username=username).get(id=id)
-        print(transaction)
-        return JsonResponse({
-            "amount": transaction.amount,
-            "description": transaction.description,
-            "category": transaction.category.name,
-            "datetime": transaction.datetime
-        }, status=200)
+        try:
+            transaction = Transaction.objects.filter(user__username=username).get(id=id)
+            print(transaction)
+            return JsonResponse({
+                "amount": transaction.amount,
+                "description": transaction.description,
+                "category": transaction.category.name,
+                "datetime": transaction.datetime
+            }, status=200)
+        except Transaction.DoesNotExist:
+            return JsonResponse({
+                "message": "Transaction not found"
+            }, status=404)
     else:
         return JsonResponse({
-            "message": "Transaction not found"
-        }, status=404)
+            "message": "Invalid request"
+        }, status=400)
 
 
 def editTransaction(request):
-    if request.method == "PUT":
-        
+    if request.method == "POST":
+        transaction_data = json.loads(request.body)
+        transaction_id = transaction_data.get("id")
+        updated_amount = transaction_data.get("amount")
+        updated_description = transaction_data.get("description")
+        updated_category = transaction_data.get("category")
+        updated_date = transaction_data.get("datetime")
+
+        print(transaction_id, updated_amount, updated_category, updated_description, updated_date)
+
+        try:
+            # transaction = Transaction.objects.get(id=transaction_id)
+            # transaction.amount = updated_amount
+            # transaction.description = updated_description
+            # transaction.category = updated_category
+            # transaction.datetime = datetime._IsoCalendarDate(updated_date)
+            # transaction.save()
+
+            return JsonResponse({
+                "message": "Transaction edited successfully"
+            })
+        except Transaction.DoesNotExist:
+            return JsonResponse({
+                "message": "Transaction not found"
+            }, status=404)
+    else:
+        return JsonResponse({
+            "message": "Inavlid request"
+        }, status=400)
     
 
 def deleteTransaction(request):
@@ -102,16 +134,21 @@ def deleteTransaction(request):
     if request.method == "POST":
         data = json.loads(request.body)
         transaction_id = data.get("id")
-        transaction = Transaction.objects.get(id=transaction_id)
-        # print(transaction)
-        transaction.delete()
-        print(transaction_id)
-        return JsonResponse({
-            "message": f"post {transaction_id} deleted successfully"
-        })
+        try:
+            transaction = Transaction.objects.get(id=transaction_id)
+            # print(transaction)
+            transaction.delete()
+            print(transaction_id)
+            return JsonResponse({
+                "message": f"post {transaction_id} deleted successfully"
+            })
+        except Transaction.DoesNotExist:
+            return JsonResponse({
+                "message": "Transaction not found"
+            }, status=404)
     return JsonResponse({
-        "error": "Invalid Request"
-    }, status=404)
+        "message": "Invalid Request"
+    }, status=400)
 
 
 @login_required
