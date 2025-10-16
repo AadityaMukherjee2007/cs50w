@@ -1,4 +1,4 @@
-import datetime
+from django.db.models import Sum
 import json
 from django import forms
 from django.shortcuts import render
@@ -6,9 +6,8 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.db import IntegrityError
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth import authenticate, login, logout
 from .models import Transaction, Category, User
 
 # Create your views here.
@@ -131,7 +130,14 @@ def editTransaction(request):
 
 def getGraphData(request):
     if request.method == "GET":
-        ...
+        totalIncome = (Transaction.objects.filter(user=request.user, category__name="income").aggregate(total=Sum('amount'))['total'] or 0)
+        totalExpense = (Transaction.objects.filter(user=request.user, category__name="expense").aggregate(total=Sum('amount'))['total'] or 0)
+        print(totalExpense, totalIncome)
+        return JsonResponse({
+            "total_income": totalIncome,
+            "total_expense": totalExpense,
+            "total_savings": totalIncome - totalExpense
+        })
     else:
         return JsonResponse({
             "message": "Inavlid request"

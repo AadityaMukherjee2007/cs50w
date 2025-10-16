@@ -14,4 +14,6 @@ urlpatterns = [
     path("getTransaction", views.getTransaction, name="getTransaction"),
     path("deleteTransaction", views.deleteTransaction, name="deleteTransaction"),
     path("editTransaction", views.editTransaction, name="editTransaction"),
+    path("getGraphData", views.getGraphData, name="getGraphData"),
+
 ]
