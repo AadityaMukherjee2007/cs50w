@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="{% static 'financial-profit.png' %}" type="image/x-icon"/>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-gray-100">
     {% if user.is_authenticated %}
@@ -51,7 +52,7 @@
                         {% endif %}
 
                         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white py-1 ring-1 ring-black ring-opacity-5">
-                            <div class="block px-4 py-2 text-sm text-gray-700">{{ user }}</div>
+                            <div class="block px-4 py-2 text-sm text-gray-700 bg-gray-200">{{ user }}</div>
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
                             <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
                         </div>

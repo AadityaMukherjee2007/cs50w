@@ -2,10 +2,12 @@ const USER = document.getElementById("User").value;
 const csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
 const transactionHeading = document.querySelector("#transactionHeading");
 const transactions_div = document.getElementById("transactions");
+let formContent = document.querySelector("form");
+
+let editMode = false;
+let editTransactionId = null;
 
 document.addEventListener("DOMContentLoaded", function() {
-    
-    let formContent = document.querySelector("form");
     formContent.style.display = "none";
 
     transactionHeading.addEventListener("click", () => {
@@ -18,8 +20,9 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    displayTransactions();
     addTransaction();
+    displayTransactions();
+    
 });
 
 function formatDate(isoDate) {
@@ -30,18 +33,22 @@ function formatDate(isoDate) {
 function addTransaction() {
     document.querySelector("form").onsubmit = (event) => {
         event.preventDefault();
+        
         const amount = document.getElementById("amount").value;
         const description = document.getElementById("description").value;
         const category = document.getElementById("category").value;
         const date = document.getElementById("date").value;
 
-        fetch("addTransaction", {
+        const url = editMode ? "editTransaction" : "addTransaction";
+
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrf_token
             },
             body: JSON.stringify({
+                id: editTransactionId,
                 amount: amount,
                 description: description,
                 category: category,
@@ -51,6 +58,12 @@ function addTransaction() {
         .then(response => response.json())
         .then(result => {
             console.log(result);
+            transactionHeading.classList.add("justify-self-center")
+            formContent.style.display = "none";
+            editTransactionId = null;
+            editMode = false;
+            // window.location.reload();
+            displayTransactions();
         });
         // console.log(amount, description, category, date);
     }
@@ -156,12 +169,15 @@ function editTransaction() {
                 transactionHeading.classList.remove("justify-self-center")
                 form.style.display = "block";
 
-                const submit_btn = document.getElementById("submit-btn");
-                submit_btn.replaceWith(submit_btn.cloneNode(true));
+                window.scrollY(0);
+                editMode = true;
+                editTransactionId = transaction_id;
+
+                /*const submit_btn = document.getElementById("submit-btn");
                 submit_btn.onclick = (event) => {
                     // event.preventDefault();
                     // alert("edit form submitted");
-                    fetch("editTransaction", {
+                     fetch("editTransaction", {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -182,7 +198,8 @@ function editTransaction() {
                         displayTransactions();
                     })
                     .catch(error => console.error("Error editing:", error));
-                }
+                    
+                }*/
             })
             .catch(error => console.error("Error editing: ", error));
         });

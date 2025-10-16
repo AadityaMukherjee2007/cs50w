@@ -104,17 +104,17 @@ def editTransaction(request):
         updated_amount = transaction_data.get("amount")
         updated_description = transaction_data.get("description")
         updated_category = transaction_data.get("category")
-        updated_date = transaction_data.get("datetime")
+        updated_date = transaction_data.get("date")
 
         print(transaction_id, updated_amount, updated_category, updated_description, updated_date)
 
         try:
-            # transaction = Transaction.objects.get(id=transaction_id)
-            # transaction.amount = updated_amount
-            # transaction.description = updated_description
-            # transaction.category = updated_category
-            # transaction.datetime = datetime._IsoCalendarDate(updated_date)
-            # transaction.save()
+            transaction = Transaction.objects.get(id=transaction_id)
+            transaction.amount = updated_amount
+            transaction.description = updated_description
+            transaction.category = Category.objects.get(name=updated_category)
+            transaction.datetime = updated_date
+            transaction.save()
 
             return JsonResponse({
                 "message": "Transaction edited successfully"
@@ -127,6 +127,16 @@ def editTransaction(request):
         return JsonResponse({
             "message": "Inavlid request"
         }, status=400)
+    
+
+def getGraphData(request):
+    if request.method == "GET":
+        ...
+    else:
+        return JsonResponse({
+            "message": "Inavlid request"
+        }, status=400)
+
     
 
 def deleteTransaction(request):
