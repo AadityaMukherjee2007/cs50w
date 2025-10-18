@@ -1,26 +1,42 @@
 const USER = document.getElementById("User").value;
 const csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
 const transactionHeading = document.querySelector("#transactionHeading");
+const transactionSearchHeading = document.querySelector("#transactionSearchHeading");
 const transactions_div = document.getElementById("transactions");
-let formContent = document.querySelector("form");
+let addFormContent = document.querySelector("#add_form");
+let searchFormContent = document.querySelector("#search_form");
 
 let editMode = false;
 let editTransactionId = null;
 
 document.addEventListener("DOMContentLoaded", function() {
-    formContent.style.display = "none";
+    addFormContent.style.display = "none";
+    searchFormContent.style.display = "none";
 
     transactionHeading.addEventListener("click", () => {
-        if (formContent.style.display === "none") {
-            transactionHeading.classList.remove("justify-self-center")
-            formContent.style.display = "block";
+        if (addFormContent.style.display === "none") {
+            addFormContent.style.display = "block";
+            searchFormContent.style.display = "none";
+            transactionSearchHeading.style.display = "none";
         } else {
-            transactionHeading.classList.add("justify-self-center")
-            formContent.style.display = "none";
+            addFormContent.style.display = "none";
+            transactionSearchHeading.style.display = "block";
+        }
+    });
+
+    transactionSearchHeading.addEventListener("click", () => {
+        if (searchFormContent.style.display === "none") {
+            searchFormContent.style.display = "block";
+            addFormContent.style.display = "none";
+            transactionHeading.style.display = "none";
+        } else {
+            searchFormContent.style.display = "none";
+            transactionHeading.style.display = "block";
         }
     });
 
     addTransaction();
+    searchTransaction();
     displayTransactions();
     
 });
@@ -169,7 +185,7 @@ function editTransaction() {
                 transactionHeading.classList.remove("justify-self-center")
                 form.style.display = "block";
 
-                window.scrollY(0);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 editMode = true;
                 editTransactionId = transaction_id;
 
@@ -203,5 +219,56 @@ function editTransaction() {
             })
             .catch(error => console.error("Error editing: ", error));
         });
+    });
+}
+
+function searchTransaction() {
+    document.getElementById("transactionSearchHeading").addEventListener("click", () => {
+        // alert("Search Transaction");
+
+        const equal_btn = document.getElementById("=");
+        const less_equal_btn = document.getElementById("<=");
+        const greater_equal_btn = document.getElementById(">=");
+
+        let amt_choice = null;
+        
+        equal_btn.onclick = () => {
+            equal_btn.classList.add("bg-gray-200");
+            less_equal_btn.classList.remove("bg-gray-200");
+            greater_equal_btn.classList.remove("bg-gray-200");
+
+            amt_choice = equal_btn.value;
+        }
+
+        less_equal_btn.onclick = () => {
+            equal_btn.classList.remove("bg-gray-200");
+            less_equal_btn.classList.add("bg-gray-200");
+            greater_equal_btn.classList.remove("bg-gray-200");
+
+            amt_choice = less_equal_btn.value;
+        }
+
+        greater_equal_btn.onclick = () => {
+            equal_btn.classList.remove("bg-gray-200");
+            less_equal_btn.classList.remove("bg-gray-200");
+            greater_equal_btn.classList.add("bg-gray-200");
+
+            amt_choice = greater_equal_btn.value;
+        }
+
+        document.getElementById("search_form").onsubmit = event => {
+            const amt = document.getElementById("amount").value;
+            const desc = document.getElementById("description").value;
+            const cat = document.getElementById("category").value;
+            const date = document.getElementById("date").value;
+
+            console.log(amt, desc, cat, date);
+
+            if (!(amt && desc && cat && date))
+            {
+                alert("Fillout atleast one search field!");
+                event.preventDefault();
+            }
+        }
     });
 }
