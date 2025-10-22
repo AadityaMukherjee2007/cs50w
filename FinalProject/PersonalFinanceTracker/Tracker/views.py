@@ -1,4 +1,5 @@
-from django.db.models import Sum
+import datetime
+from django.db.models import Sum, Q
 import json
 from django import forms
 from django.shortcuts import render
@@ -69,7 +70,46 @@ def getTransactions(request):
         return JsonResponse(list(transactions), safe=False)
     else:
         return JsonResponse({
-            "error": "User not found!"
+            "error": "Invalid Request"
+        }, status=404)
+    
+def searchTransactions(request):
+    if request.method == "GET":
+        username = request.user
+        amt = request.GET.get("amt")
+        amt_choice = request.GET.get("amtchoice")
+        desc = request.GET.get("desc")
+        cat = request.GET.get("cat")
+        date = request.GET.get("date")
+
+        print(username, amt, amt_choice, desc, cat, date)
+
+        filters = Q(user__username=username)
+
+        if amt:
+            if amt_choice == "=":
+                filters &= Q(amount=amt)
+            elif amt_choice == "<=":
+                filters &= Q(amount__lte=amt)
+            elif amt_choice == ">=":
+                filters &= Q(amount__gte=amt)
+
+        if desc:
+            filters &= Q(description__icontains=desc)
+
+        if cat:
+            filters &= Q(category__name__icontains=cat)
+
+        if date:
+            filters &= Q(datetime__date=date)
+        
+        transactions = Transaction.objects.filter(filters).order_by("-datetime").values(
+            "id", "amount", "description", "category__name", "datetime"
+        )
+        return JsonResponse(list(transactions), safe=False)
+    else:
+        return JsonResponse({
+            "error": "Invalid Request"
         }, status=404)
     
 
@@ -130,13 +170,14 @@ def editTransaction(request):
 
 def getGraphData(request):
     if request.method == "GET":
-        totalIncome = (Transaction.objects.filter(user=request.user, category__name="income").aggregate(total=Sum('amount'))['total'] or 0)
-        totalExpense = (Transaction.objects.filter(user=request.user, category__name="expense").aggregate(total=Sum('amount'))['total'] or 0)
-        print(totalExpense, totalIncome)
+        totalIncome = Transaction.objects.total_income(request.user)
+        totalExpense = Transaction.objects.total_expense(request.user)
+        totalSavings = Transaction.objects.total_savings(request.user)
+        # print(totalExpense, totalIncome)
         return JsonResponse({
             "total_income": totalIncome,
             "total_expense": totalExpense,
-            "total_savings": totalIncome - totalExpense
+            "total_savings": totalSavings
         })
     else:
         return JsonResponse({
@@ -146,7 +187,6 @@ def getGraphData(request):
     
 
 def deleteTransaction(request):
-    user = request.user
     if request.method == "POST":
         data = json.loads(request.body)
         transaction_id = data.get("id")

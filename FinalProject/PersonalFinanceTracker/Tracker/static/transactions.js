@@ -74,8 +74,8 @@ function addTransaction() {
         .then(response => response.json())
         .then(result => {
             console.log(result);
-            transactionHeading.classList.add("justify-self-center")
-            formContent.style.display = "none";
+            addFormContent.style.display = "none";
+            transactionSearchHeading.style.display = "block";
             editTransactionId = null;
             editMode = false;
             // window.location.reload();
@@ -98,7 +98,7 @@ function displayTransactions() {
         
         for (let transaction of result)
         {
-            console.log(transaction);
+            // console.log(transaction);
 
             let transactionDiv = document.createElement("div");
             transactionDiv.className = "max-w-2xl mx-auto mt-4 bg-white shadow-md rounded-lg p-4 border border-gray-200";
@@ -222,6 +222,29 @@ function editTransaction() {
     });
 }
 
+function craftUrlForSearch(amt, amt_choice, desc, cat, date) {
+    let url = `searchTransactions?`;
+    if (amt) {
+        url += `amt=${amt}&amtchoice=${amt_choice}`;
+    }
+    
+    if (desc) {
+        url += `&desc=${desc}`;
+    }
+
+    if (cat) {
+        url += `&cat=${cat}`;
+    }
+
+    if (date) {
+        url += `&date=${date}`;
+    }
+
+    console.log(url);
+
+    return url;
+}
+
 function searchTransaction() {
     document.getElementById("transactionSearchHeading").addEventListener("click", () => {
         // alert("Search Transaction");
@@ -230,7 +253,7 @@ function searchTransaction() {
         const less_equal_btn = document.getElementById("<=");
         const greater_equal_btn = document.getElementById(">=");
 
-        let amt_choice = null;
+        let amt_choice = "=";
         
         equal_btn.onclick = () => {
             equal_btn.classList.add("bg-gray-200");
@@ -257,18 +280,77 @@ function searchTransaction() {
         }
 
         document.getElementById("search_form").onsubmit = event => {
-            const amt = document.getElementById("amount").value;
-            const desc = document.getElementById("description").value;
-            const cat = document.getElementById("category").value;
-            const date = document.getElementById("date").value;
+            event.preventDefault();
+
+            const amt = document.getElementById("search_amount").value;
+            const desc = document.getElementById("search_description").value;
+            const cat = document.getElementById("search_category").value;
+            const date = document.getElementById("search_date").value;
 
             console.log(amt, desc, cat, date);
+            // alert(amt, desc, cat, date);
 
-            if (!(amt && desc && cat && date))
-            {
+            if (!(amt || desc || cat || date)) {
                 alert("Fillout atleast one search field!");
                 event.preventDefault();
             }
+
+            const url = craftUrlForSearch(amt, amt_choice, desc, cat, date);
+            fetch(url)
+            .then(response => response.json())
+            .then(result => {
+                // console.log(result);
+
+                searchFormContent.style.display = "none";      // hide search form
+                transactionSearchHeading.style.display = "block"; // show the heading so user can click again
+                transactionHeading.style.display = "block";
+
+                document.getElementById("search_amount").value = "";
+                document.getElementById("search_description").value = "";
+                document.getElementById("search_category").value = "";
+                document.getElementById("search_date").value = "";
+                amt_choice = "=";
+
+                let counter = 0;
+        
+                for (let transaction of result)
+                    counter++;
+
+                transactions.innerHTML = "";
+                
+                for (let transaction of result)
+                {
+                    console.log(transaction);
+        
+                    let transactionDiv = document.createElement("div");
+                    transactionDiv.className = "max-w-2xl mx-auto mt-4 bg-white shadow-md rounded-lg p-4 border border-gray-200";
+        
+                    transactionDiv.innerHTML = `
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Transaction #${counter}</h3>
+                            <p class="text-gray-700"><span class="font-semibold">Amount:</span> $${transaction.amount}</p>
+                            <p class="text-gray-700"><span class="font-semibold">Description:</span> ${transaction.description}</p>
+                            <p class="text-gray-700"><span class="font-semibold">Category:</span> ${transaction.category__name}</p>
+                            <p class="text-gray-700"><span class="font-semibold">Date:</span> ${formatDate(transaction.datetime)}</p>
+                        </div>
+                        <div class="relative" data-id="${transaction.id}">
+                            <div class="absolute right-0 bottom-0">
+                                <button class="edit-btn m-1 p-2 rounded-lg bg-sky-400 hover:bg-sky-500">Edit</button>
+                                <button class="delete-btn m-1 p-2 rounded-lg bg-red-500 hover:bg-red-600">Delete</button>
+                            </div>
+                        </div>
+                    `;
+        
+                    // transaction.addEventListener("contextmenu", (event))
+        
+                    transactions_div.appendChild(transactionDiv);
+                    counter--;
+                }
+        
+                deleteTransaction();
+                editTransaction();
+            })
+            .catch(error => console.error("Error: ", error));
         }
     });
 }

@@ -4,11 +4,9 @@ document.addEventListener("DOMContentLoaded", function () {
     .then((data) => {
       console.log(data);
 
-      document.getElementById("total_income").innerHTML = data["total_income"];
-      document.getElementById("total_expense").innerHTML =
-        data["total_expense"];
-      document.getElementById("total_savings").innerHTML =
-        data["total_savings"];
+      document.getElementById("total_income").innerHTML = "$" + data["total_income"];
+      document.getElementById("total_expense").innerHTML = "$" + data["total_expense"];
+      document.getElementById("total_savings").innerHTML = "$" + data["total_savings"];
 
       const labels = ["Income", "Expense", "Savings"];
       const values = [
