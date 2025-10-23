@@ -1,4 +1,4 @@
-import datetime
+from django.core.paginator import Paginator
 from django.db.models import Sum, Q
 import json
 from django import forms
@@ -73,6 +73,7 @@ def getTransactions(request):
             "error": "Invalid Request"
         }, status=404)
     
+# merge this with geTransaction() 
 def searchTransactions(request):
     if request.method == "GET":
         username = request.user
