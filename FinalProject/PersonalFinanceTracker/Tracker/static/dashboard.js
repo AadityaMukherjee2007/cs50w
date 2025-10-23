@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", function () {
         data.total_savings,
       ];
 
+      Chart.defaults.maintainAspectRatio = false;
+
       new Chart(document.getElementById("finance_graph_1"), {
         type: "pie",
         data: {

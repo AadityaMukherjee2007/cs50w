@@ -7,17 +7,20 @@
             <h1 class="text-gray-700 text-xl">Welcome, {{ user }}</h1>
         {% endif %}
     </div>
-    <div class="flex sm:flex-col">
-        <div clss="sm:flex-col">
-            <div style="height: 100px" class="flex-auto shadow-lg p-3 m-3 rounded-lg bg-gray-300 ">
+    <div class="flex flex-col m-3 lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0">
+        <div clss="shadow-lg p-4 rounded-lg bg-gray-300 text-sm sm:text-base">
+            <div style="height: 100px" class="flex-auto shadow-lg p-3 mb-3 rounded-lg bg-gray-300 ">
                 <strong>Total Income: <span class="text-green-800" id="total_income"></span></strong><br>
                 <strong>Total Expense: <span class="text-red-600" id="total_expense"></span></strong><br>
                 <strong>Total Savings: <span class="text-green-800" id="total_savings"></span></strong>
             </div>
-            <div style="height: 300px; width: 500px;" class="flex-auto shadow-lg p-3 m-3 rounded-lg bg-gray-300"><canvas id="finance_graph_2"></canvas></div>
+            <div class="shadow-lg p-4 rounded-lg bg-gray-300">
+                <canvas id="finance_graph_2" class="w-full h-64 sm:h-80"></canvas>
+            </div>
         </div>
-        <div style="width: 400px;" class="shadow-lg p-3 m-3 rounded-lg bg-gray-300"><canvas id="finance_graph_1"></canvas></div>
-        
+        <div class="flex-1 shadow-lg p-4 rounded-lg bg-gray-300">
+            <canvas id="finance_graph_1" class="w-full h-64 sm:h-80"></canvas>
+        </div>
     </div>    
     <script src="{% static 'dashboard.js' %}"></script>
 {% endblock %}
