@@ -223,7 +223,7 @@ function editTransaction() {
 }
 
 function craftUrlForSearch(amt, amt_choice, desc, cat, date) {
-    let url = `searchTransactions?`;
+    let url = `getTransactions?`;
     if (amt) {
         url += `amt=${amt}&amtchoice=${amt_choice}`;
     }

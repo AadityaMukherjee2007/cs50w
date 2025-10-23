@@ -15,5 +15,4 @@ urlpatterns = [
     path("deleteTransaction", views.deleteTransaction, name="deleteTransaction"),
     path("editTransaction", views.editTransaction, name="editTransaction"),
     path("getGraphData", views.getGraphData, name="getGraphData"),
-    path("searchTransactions", views.searchTransactions, name="searchTransactions")
 ]

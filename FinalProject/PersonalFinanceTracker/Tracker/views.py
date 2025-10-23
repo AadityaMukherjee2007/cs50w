@@ -61,20 +61,8 @@ def addTransaction(request):
     }, status=404)
 
 
-def getTransactions(request):
-    if request.method == "GET":
-        username = request.GET.get("user")
-        transactions = Transaction.objects.filter(user__username=username).order_by("-datetime").values(
-            "id", "amount", "description", "category__name", "datetime"
-        )
-        return JsonResponse(list(transactions), safe=False)
-    else:
-        return JsonResponse({
-            "error": "Invalid Request"
-        }, status=404)
-    
 # merge this with geTransaction() 
-def searchTransactions(request):
+def getTransactions(request):
     if request.method == "GET":
         username = request.user
         amt = request.GET.get("amt")
@@ -113,6 +101,7 @@ def searchTransactions(request):
             "error": "Invalid Request"
         }, status=404)
     
+
 
 def getTransaction(request):
     if request.method == "GET":
