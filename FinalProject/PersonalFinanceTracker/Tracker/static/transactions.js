@@ -13,6 +13,8 @@ let currentPage = 1;
 const perPage = 5;
 let hasNext = false, hasPrev = false;
 
+let counter = 0;
+
 document.addEventListener("DOMContentLoaded", function() {
     addFormContent.style.display = "none";
     searchFormContent.style.display = "none";
@@ -124,9 +126,13 @@ function displayTransactions() {
     .then(response => response.json())
     .then(result => {
         console.log(result);
-        let counter = result.transactions.length;
+
+        if (currentPage === 1) {
+            counter = result.totalTransactions;
+        }
+
         hasNext = result.has_next;
-        hasPrev = result.has_prev;
+        hasPrev = result.has_previous;
         pageNav();
         
         for (let transaction of result.transactions)
@@ -256,9 +262,9 @@ function editTransaction() {
 }
 
 function craftUrlForSearch(amt, amt_choice, desc, cat, date) {
-    let url = `getTransactions?`;
+    let url = `getTransactions?page=${currentPage}&per_page=${perPage}`;
     if (amt) {
-        url += `amt=${amt}&amtchoice=${amt_choice}`;
+        url += `&amt=${amt}&amtchoice=${amt_choice}`;
     }
     
     if (desc) {
@@ -332,10 +338,10 @@ function searchTransaction() {
             fetch(url)
             .then(response => response.json())
             .then(result => {
-                // console.log(result);
+                console.log(result);
 
-                searchFormContent.style.display = "none";      // hide search form
-                transactionSearchHeading.style.display = "block"; // show the heading so user can click again
+                searchFormContent.style.display = "none";      
+                transactionSearchHeading.style.display = "block"; 
                 transactionHeading.style.display = "block";
 
                 document.getElementById("search_amount").value = "";
@@ -344,14 +350,17 @@ function searchTransaction() {
                 document.getElementById("search_date").value = "";
                 amt_choice = "=";
 
-                let counter = 0;
+                if (currentPage === 1) {
+                    counter = result.totalTransactions;
+                }
         
-                for (let transaction of result)
-                    counter++;
+                hasNext = result.has_next;
+                hasPrev = result.has_previous;
+                pageNav();
 
                 transactions.innerHTML = "";
                 
-                for (let transaction of result)
+                for (let transaction of result.transactions)
                 {
                     console.log(transaction);
         

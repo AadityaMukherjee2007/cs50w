@@ -101,19 +101,19 @@ def getTransactions(request):
             page_obj = paginator.page(1)
 
         data = list(page_obj.object_list.values("id", "amount", "description", "category__name", "datetime"))
+        totalTransactions = len(transactions)
 
         return JsonResponse({
             "transactions": data,
             "has_next": page_obj.has_next(),
             "has_previous": page_obj.has_previous(),
-            "num_pages": paginator.num_pages,
+            "totalTransactions": totalTransactions,
             "current_page": page_obj.number
         })
     else:
         return JsonResponse({"error": "Invalid Request"}, status=404)
 
     
-
 
 def getTransaction(request):
     if request.method == "GET":
