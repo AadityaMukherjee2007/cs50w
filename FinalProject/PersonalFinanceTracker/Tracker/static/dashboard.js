@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
           labels: labels,
           datasets: [
             {
-              label: "Total",
+              label: "Amount",
               data: values,
               backgroundColor: [
                 "rgba(75, 192, 192, 0.6)",
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
           responsive: true,
           plugins: {
             legend: { position: "top" },
-            title: { display: true, text: "Financial Overview" },
+            title: { display: true, text: "Financial Overview (Pie)" },
           },
         },
       });
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
           labels: labels,
           datasets: [
             {
-              label: "Total",
+              label: "Ovreview",
               data: values,
               backgroundColor: [
                 "rgba(75, 192, 192, 0.6)",
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
           responsive: true,
           plugins: {
             legend: { position: "top" },
-            title: { display: true, text: "Financial Overview" },
+            title: { display: true, text: "Financial Overview (Bar)" },
           },
         },
       });

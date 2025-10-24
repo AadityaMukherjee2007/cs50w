@@ -20,26 +20,27 @@ document.addEventListener("DOMContentLoaded", function() {
     searchFormContent.style.display = "none";
 
     transactionHeading.addEventListener("click", () => {
-        if (addFormContent.style.display === "none") {
+        const isCurrentlyVisible = addFormContent.style.display === "block";
+        resetFormState();
+    
+        if (!isCurrentlyVisible) {
             addFormContent.style.display = "block";
-            searchFormContent.style.display = "none";
-            transactionSearchHeading.style.display = "none";
-        } else {
-            addFormContent.style.display = "none";
-            transactionSearchHeading.style.display = "block";
+            transactionSearchHeading.classList.add("hidden");
+            transactionHeading.classList.remove("hidden");
         }
     });
-
+    
     transactionSearchHeading.addEventListener("click", () => {
-        if (searchFormContent.style.display === "none") {
+        const isCurrentlyVisible = searchFormContent.style.display === "block";
+        resetFormState();
+    
+        if (!isCurrentlyVisible) {
             searchFormContent.style.display = "block";
-            addFormContent.style.display = "none";
-            transactionHeading.style.display = "none";
-        } else {
-            searchFormContent.style.display = "none";
-            transactionHeading.style.display = "block";
+            transactionHeading.classList.add("hidden");
+            transactionSearchHeading.classList.remove("hidden");
         }
     });
+    
 
     addTransaction();
     searchTransaction();
@@ -51,6 +52,26 @@ function formatDate(isoDate) {
     let d = new Date(isoDate);
     return d.toLocaleDateString();
 }
+
+function resetFormState() {
+    // Hide both forms
+    addFormContent.style.display = "none";
+    searchFormContent.style.display = "none";
+
+    // Show both headings again
+    transactionHeading.classList.remove("hidden");
+    transactionSearchHeading.classList.remove("hidden");
+
+    // Restore header alignment
+    const formHeader = document.getElementById("formHeader");
+    formHeader.classList.add("justify-between");
+    formHeader.classList.remove("justify-center");
+
+    // Remove existing exit button if any
+    const existingExit = formHeader.querySelector(".exit-btn");
+    if (existingExit) existingExit.remove();
+}
+
 
 function addTransaction() {
     document.querySelector("form").onsubmit = (event) => {
@@ -85,6 +106,19 @@ function addTransaction() {
             editTransactionId = null;
             editMode = false;
             // window.location.reload();
+
+            document.getElementById("amount").value = "";
+            document.getElementById("description").value = "";
+            document.getElementById("category").value = "";
+            document.getElementById("date").value = "";
+            document.getElementById("submit-btn").innerHTML = "Add Transaction";
+
+            transactionHeading.classList.add("hidden");
+            transactionSearchHeading.classList.add("hidden");
+
+            document.getElementById("formHeader").classList.remove("justify-between");
+            document.getElementById("formHeader").classList.add("justify-center");
+
             displayTransactions();
         });
         // console.log(amount, description, category, date);
@@ -127,9 +161,7 @@ function displayTransactions() {
     .then(result => {
         console.log(result);
 
-        if (currentPage === 1) {
-            counter = result.totalTransactions;
-        }
+        counter = result.totalTransactions - (currentPage - 1) * perPage;
 
         hasNext = result.has_next;
         hasPrev = result.has_previous;
@@ -209,8 +241,32 @@ function editTransaction() {
             .then(result => {
                 console.log(result);
 
-                const transactionHeading = document.querySelector("#transactionHeading");
-                let form = document.querySelector("form");
+                transactionHeading.classList.add("hidden");
+                transactionSearchHeading.classList.add("hidden");
+
+                const formHeader = document.getElementById("formHeader");
+
+                // Remove any existing exit first
+                const oldExit = formHeader.querySelector(".exit-btn");
+                if (oldExit) oldExit.remove();
+
+                const exit = document.createElement("div");
+                exit.innerHTML = "x";
+                exit.className = "exit-btn border border-indigo-500 text-indigo-500 rounded-full px-3 py-1 cursor-pointer hover:bg-indigo-500 hover:text-white";
+                formHeader.appendChild(exit);
+                
+                document.getElementById("formHeader").classList.remove("justify-between");
+                document.getElementById("formHeader").classList.add("justify-center");
+
+                exit.onclick = () => {
+                    resetFormState();
+                    document.getElementById("amount").value = "";
+                    document.getElementById("description").value = "";
+                    document.getElementById("category").value = "";
+                    document.getElementById("date").value = "";
+                    document.getElementById("submit-btn").innerHTML = "Add Transaction";
+                };
+                
 
                 document.getElementById("submit-btn").innerHTML = "Edit Transaction";
 
@@ -220,9 +276,7 @@ function editTransaction() {
                 
                 const date = new Date(result["datetime"]);
                 document.getElementById("date").value = date.toISOString().split("T")[0];
-                
-                transactionHeading.classList.remove("justify-self-center")
-                form.style.display = "block";
+                addFormContent.style.display = "block";
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 editMode = true;
@@ -350,9 +404,7 @@ function searchTransaction() {
                 document.getElementById("search_date").value = "";
                 amt_choice = "=";
 
-                if (currentPage === 1) {
-                    counter = result.totalTransactions;
-                }
+                counter = result.totalTransactions - (currentPage - 1) * perPage;
         
                 hasNext = result.has_next;
                 hasPrev = result.has_previous;
