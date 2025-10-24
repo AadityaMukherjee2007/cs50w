@@ -9,6 +9,10 @@ let searchFormContent = document.querySelector("#search_form");
 let editMode = false;
 let editTransactionId = null;
 
+let currentPage = 1;
+const perPage = 5;
+let hasNext = false, hasPrev = false;
+
 document.addEventListener("DOMContentLoaded", function() {
     addFormContent.style.display = "none";
     searchFormContent.style.display = "none";
@@ -85,18 +89,47 @@ function addTransaction() {
     }
 }
 
+function pageNav() {
+    const prev_btn = document.getElementById("prevPage");
+    const next_btn = document.getElementById("nextPage");
+
+    if (!hasPrev && hasNext) {
+        prev_btn.classList.add("hidden");
+        next_btn.classList.remove("hidden");
+    } else if (hasPrev && !hasNext) {
+        prev_btn.classList.remove("hidden");
+        next_btn.classList.add("hidden");
+    } else if (hasPrev && hasNext) {
+        prev_btn.classList.remove("hidden");
+        next_btn.classList.remove("hidden");
+    } else if (!hasPrev && !hasNext) {
+        prev_btn.classList.add("hidden");
+        next_btn.classList.add("hidden");
+    }
+
+    prev_btn.onclick = () => {
+        currentPage--;
+        displayTransactions();
+    }
+
+    next_btn.onclick = () => {
+        currentPage++;
+        displayTransactions();
+    }
+}
+
 function displayTransactions() {
     transactions_div.innerHTML = "";
-    fetch(`getTransactions?user=${USER}`)
+    fetch(`getTransactions?user=${USER}&page=${currentPage}&per_page=${[perPage]}`)
     .then(response => response.json())
     .then(result => {
-        // console.log(result);
-        let counter = 0;
-
-        for (let transaction of result)
-            counter++;
+        console.log(result);
+        let counter = result.transactions.length;
+        hasNext = result.has_next;
+        hasPrev = result.has_prev;
+        pageNav();
         
-        for (let transaction of result)
+        for (let transaction of result.transactions)
         {
             // console.log(transaction);
 

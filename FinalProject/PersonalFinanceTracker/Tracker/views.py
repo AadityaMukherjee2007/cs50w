@@ -61,7 +61,7 @@ def addTransaction(request):
     }, status=404)
 
 
-# merge this with geTransaction() 
+
 def getTransactions(request):
     if request.method == "GET":
         username = request.user
@@ -70,8 +70,8 @@ def getTransactions(request):
         desc = request.GET.get("desc")
         cat = request.GET.get("cat")
         date = request.GET.get("date")
-
-        print(username, amt, amt_choice, desc, cat, date)
+        page_number = request.GET.get("page", 1)  
+        per_page = request.GET.get("per_page", 5) 
 
         filters = Q(user__username=username)
 
@@ -91,15 +91,27 @@ def getTransactions(request):
 
         if date:
             filters &= Q(datetime__date=date)
-        
-        transactions = Transaction.objects.filter(filters).order_by("-datetime").values(
-            "id", "amount", "description", "category__name", "datetime"
-        )
-        return JsonResponse(list(transactions), safe=False)
-    else:
+
+        transactions = Transaction.objects.filter(filters).order_by("-datetime")
+        paginator = Paginator(transactions, per_page)
+
+        try:
+            page_obj = paginator.page(page_number)
+        except:
+            page_obj = paginator.page(1)
+
+        data = list(page_obj.object_list.values("id", "amount", "description", "category__name", "datetime"))
+
         return JsonResponse({
-            "error": "Invalid Request"
-        }, status=404)
+            "transactions": data,
+            "has_next": page_obj.has_next(),
+            "has_previous": page_obj.has_previous(),
+            "num_pages": paginator.num_pages,
+            "current_page": page_obj.number
+        })
+    else:
+        return JsonResponse({"error": "Invalid Request"}, status=404)
+
     
 
 
