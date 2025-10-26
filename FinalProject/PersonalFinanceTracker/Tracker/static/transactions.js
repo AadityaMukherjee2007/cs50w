@@ -14,6 +14,7 @@ const perPage = 5;
 let hasNext = false, hasPrev = false;
 
 let counter = 0;
+let currentSearch = null;
 
 document.addEventListener("DOMContentLoaded", function() {
     addFormContent.style.display = "none";
@@ -145,18 +146,37 @@ function pageNav() {
 
     prev_btn.onclick = () => {
         currentPage--;
-        displayTransactions();
+        if (currentSearch) {
+            displayTransactions(currentSearch);
+        } else {
+            displayTransactions();
+        }
     }
-
+    
     next_btn.onclick = () => {
         currentPage++;
-        displayTransactions();
+        if (currentSearch) {
+            displayTransactions(currentSearch);
+        } else {
+            displayTransactions();
+        }
     }
 }
 
-function displayTransactions() {
+function displayTransactions(searchParams = null) {
     transactions_div.innerHTML = "";
-    fetch(`getTransactions?user=${USER}&page=${currentPage}&per_page=${[perPage]}`)
+
+    let url = searchParams
+    ? craftUrlForSearch(
+        searchParams.amt,
+        searchParams.amt_choice,
+        searchParams.desc,
+        searchParams.cat,
+        searchParams.date
+      )
+    : `getTransactions?user=${USER}&page=${currentPage}&per_page=${perPage}`;
+
+    fetch(url)
     .then(response => response.json())
     .then(result => {
         console.log(result);
@@ -316,7 +336,8 @@ function editTransaction() {
 }
 
 function craftUrlForSearch(amt, amt_choice, desc, cat, date) {
-    let url = `getTransactions?page=${currentPage}&per_page=${perPage}`;
+    let url = `getTransactions?user=${USER}&page=${currentPage}&per_page=${perPage}`;
+    
     if (amt) {
         url += `&amt=${amt}&amtchoice=${amt_choice}`;
     }
@@ -337,6 +358,7 @@ function craftUrlForSearch(amt, amt_choice, desc, cat, date) {
 
     return url;
 }
+
 
 function searchTransaction() {
     document.getElementById("transactionSearchHeading").addEventListener("click", () => {
@@ -388,6 +410,7 @@ function searchTransaction() {
                 event.preventDefault();
             }
 
+            currentSearch = { amt, amt_choice, desc, cat, date };
             const url = craftUrlForSearch(amt, amt_choice, desc, cat, date);
             fetch(url)
             .then(response => response.json())

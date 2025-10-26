@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
           labels: labels,
           datasets: [
             {
-              label: "Ovreview",
+              label: "Amount",
               data: values,
               backgroundColor: [
                 "rgba(75, 192, 192, 0.6)",
