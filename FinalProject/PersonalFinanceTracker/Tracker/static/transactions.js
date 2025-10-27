@@ -55,20 +55,15 @@ function formatDate(isoDate) {
 }
 
 function resetFormState() {
-    // Hide both forms
     addFormContent.style.display = "none";
     searchFormContent.style.display = "none";
 
-    // Show both headings again
     transactionHeading.classList.remove("hidden");
     transactionSearchHeading.classList.remove("hidden");
 
-    // Restore header alignment
     const formHeader = document.getElementById("formHeader");
     formHeader.classList.add("justify-between");
-    formHeader.classList.remove("justify-center");
 
-    // Remove existing exit button if any
     const existingExit = formHeader.querySelector(".exit-btn");
     if (existingExit) existingExit.remove();
 }
@@ -259,6 +254,7 @@ function editTransaction() {
             event.preventDefault();
 
             const transaction_id = event.target.closest(".relative").getAttribute("data-id");
+            resetFormState();
             // alert(transaction_id);
 
             fetch(`getTransaction?user=${USER}&id=${transaction_id}`)
@@ -271,9 +267,9 @@ function editTransaction() {
 
                 const formHeader = document.getElementById("formHeader");
 
-                // Remove any existing exit first
                 const oldExit = formHeader.querySelector(".exit-btn");
-                if (oldExit) oldExit.remove();
+                if (oldExit) 
+                    oldExit.remove();
 
                 const exit = document.createElement("div");
                 exit.innerHTML = "x";
