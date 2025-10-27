@@ -63,9 +63,11 @@ function resetFormState() {
 
     const formHeader = document.getElementById("formHeader");
     formHeader.classList.add("justify-between");
-
+    formHeader.classList.remove("justify-center");
+    
     const existingExit = formHeader.querySelector(".exit-btn");
-    if (existingExit) existingExit.remove();
+    if (existingExit) 
+        existingExit.remove();
 }
 
 
