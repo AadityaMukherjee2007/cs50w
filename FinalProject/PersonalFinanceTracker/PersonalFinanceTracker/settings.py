@@ -125,25 +125,4 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-import os
-import dj_database_url
-
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-ALLOWED_HOSTS = ["*"]
-
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [BASE_DIR / "Tracker" / "static"]
-
-# Database configuration
-DATABASES = {
-    "default": dj_database_url.config(
-        default="sqlite:///db.sqlite3",
-        conn_max_age=600,
-    )
-}
 
