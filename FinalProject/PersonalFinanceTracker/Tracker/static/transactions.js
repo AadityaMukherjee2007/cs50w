@@ -227,6 +227,11 @@ function deleteTransaction() {
             const transaction_id = event.target.closest(".relative").getAttribute("data-id");
             // alert(transaction_id);
 
+            const confirmed = window.confirm("Are you sure you want to delete this transaction?");
+
+            if (!confirmed) 
+                return;
+
             fetch("deleteTransaction", {
                 method: 'POST',
                 headers: {
