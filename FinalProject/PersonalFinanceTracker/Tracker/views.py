@@ -1,10 +1,10 @@
 from django.core.paginator import Paginator
-from django.db.models import Sum, Q
+from django.db.models import Q
 import json
 from django import forms
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
