@@ -35,8 +35,6 @@ The fact that every feature—from authentication to financial insights—was de
 
 ---
 
----
-
 ## Features
 
 This project focuses on user experience and practical financial management. Each feature was designed to help users understand and control their money more effectively, while ensuring the interface remains simple and intuitive.
